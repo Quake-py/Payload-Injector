@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "QA & Input Validation Payload Injector",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Dinamik vectors.json dosyası ve GitHub entegrasyonu ile girdi doğrulama, QA ve sınır testleri için kapsamlı test verisi enjektörü.",
   "permissions": [
     "contextMenus",

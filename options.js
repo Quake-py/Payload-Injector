@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // New extension version alert
       if (result.newVersionAvailable) {
         newVersionAlert.style.display = "flex";
-        btnDownloadUpdate.href = result.githubRepoUrl || "#";
-        btnDownloadUpdate.textContent = `v${result.newVersionAvailable} Sürümüne Git`;
+        btnDownloadUpdate.href = "https://github.com/Quake-py/Payload-Injector/archive/refs/heads/master.zip";
+        btnDownloadUpdate.textContent = `v${result.newVersionAvailable} Güncellemesini İndir (.ZIP)`;
       } else {
         newVersionAlert.style.display = "none";
       }

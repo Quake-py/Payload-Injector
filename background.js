@@ -10,6 +10,7 @@ const OFFICIAL_BACKGROUND_URL = `https://raw.githubusercontent.com/${GITHUB_USER
 const OFFICIAL_CONTENT_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/${BRANCH}/content.js`;
 
 chrome.runtime.onInstalled.addListener(async () => {
+  await chrome.storage.local.remove(["contentScriptCode", "backgroundScriptCode"]);
   await initializePayloads();
   await checkForUpdates();
 });
@@ -83,7 +84,7 @@ async function initializePayloads() {
   await rebuildMenus();
 }
 
-// Auto update from Github - Hem vectors.json hem de eklenti scriptlerini günceller!
+// Auto update from Github - Sadece vectors.json ve sürüm durumunu günceller
 async function checkForUpdates() {
   try {
     const cacheBuster = `?t=${Date.now()}`;
@@ -112,19 +113,6 @@ async function checkForUpdates() {
       if (remoteVectors && typeof remoteVectors === "object") {
         await chrome.storage.local.set({ payloads: remoteVectors });
       }
-    }
-
-    // 3. Kod/Script Güncellemelerini İndir ve Storage'a Yaz (Dinamik Enjeksiyon İçin)
-    const contentScriptRes = await fetch(OFFICIAL_CONTENT_URL + cacheBuster);
-    if (contentScriptRes.ok) {
-      const latestContentCode = await contentScriptRes.text();
-      await chrome.storage.local.set({ contentScriptCode: latestContentCode });
-    }
-
-    const backgroundScriptRes = await fetch(OFFICIAL_BACKGROUND_URL + cacheBuster);
-    if (backgroundScriptRes.ok) {
-      const latestBgCode = await backgroundScriptRes.text();
-      await chrome.storage.local.set({ backgroundScriptCode: latestBgCode });
     }
 
     await chrome.storage.local.set({ lastUpdated: new Date().toLocaleString() });

@@ -1,11 +1,90 @@
 // QA & Input Validation Extension - options.js
 
+// Bilingual UI translation map
+const translations = {
+  en: {
+    subtitleHeader: "Open Source QA & Input Validation Testing Tool",
+    txtLanguageTitle: "🌐 Language Settings",
+    lblAppLanguage: "Select Extension Language",
+    txtUpdatesTitle: "🔄 Official Updates Status",
+    txtUpdatesDesc: "The extension automatically pulls latest payloads and release version details from the official GitHub master repository.",
+    btnCheckUpdate: "Check for Updates Now",
+    updateStatusActive: "Official Release Active",
+    updateStatusChecking: "Checking for updates...",
+    updateStatusSuccess: "Update checks successful!",
+    updateStatusFailed: "Checks failed. Check connectivity.",
+    txtCustomTitle: "📂 Import Custom Payloads (New Tab)",
+    lblCustomCategory: "Category / Tab Title",
+    customCategoryPlaceholder: "e.g. My SQLi Vectors",
+    lblTxtFile: "Select TXT File (One Payload Per Line)",
+    btnUploadTxt: "Upload TXT Payloads",
+    btnClearCustom: "Clear All Custom Payloads",
+    txtCustomManageTitle: "⚙️ Manage Custom Payload Categories",
+    txtCustomManageDesc: "Review your uploaded payload tabs and delete them individually.",
+    btnDeleteCategory: "Delete Category",
+    confirmDeleteCategory: 'Are you sure you want to delete category "{cat}" and all its payloads?',
+    confirmClearCustom: "Are you sure you want to delete all custom categories?",
+    txtInspectTitle: "🔍 Inspect Loaded Payloads",
+    searchBarPlaceholder: "Search by category name, title or payload value...",
+    thSource: "Source",
+    thCategory: "Category",
+    thTitle: "Title / Row",
+    thValue: "Payload Value",
+    sourceOfficial: "Official",
+    sourceCustom: "Custom",
+    txtNewVersionAlertTitle: "New Code Update (HTML/JS) Available!",
+    txtNewVersionAlertDesc: "You need to pull and refresh the updated code package to apply static UI/script enhancements.",
+    btnDownloadUpdate: "Download Update (.ZIP)",
+    alertTxtEmpty: "Please enter a category name and choose a .txt file first.",
+    alertTxtNoLines: "Selected file is empty or invalid.",
+    alertTxtSuccess: 'Successfully loaded {count} payloads into category "{cat}"!'
+  },
+  tr: {
+    subtitleHeader: "Açık Kaynak QA & Girdi Doğrulama Test Aracı",
+    txtLanguageTitle: "🌐 Dil Ayarları",
+    lblAppLanguage: "Eklenti Dilini Seçin",
+    txtUpdatesTitle: "🔄 Resmi Güncelleme Durumu",
+    txtUpdatesDesc: "Eklenti resmi GitHub sunucumuz üzerinden manifest ve vectors.json dosyalarını otomatik olarak takip eder ve günceller.",
+    btnCheckUpdate: "Güncellemeleri Şimdi Denetle",
+    updateStatusActive: "Resmi Sürüm Aktif",
+    updateStatusChecking: "Denetleniyor...",
+    updateStatusSuccess: "Güncelleme başarılı!",
+    updateStatusFailed: "Denetleme başarısız. Bağlantıyı denetleyin.",
+    txtCustomTitle: "📂 Özel TXT Payload Ekle (Yeni Sekme)",
+    lblCustomCategory: "Kategori / Sekme Adı",
+    customCategoryPlaceholder: "Örn: Benim SQLi Payloadlarım",
+    lblTxtFile: "TXT Dosyası Seç (Her Satıra Bir Payload)",
+    btnUploadTxt: "TXT Payloadları Yükle",
+    btnClearCustom: "Tüm Özel Payloadları Temizle",
+    txtCustomManageTitle: "⚙️ Özel Payload Kategorilerini Yönet",
+    txtCustomManageDesc: "Yüklediğiniz kategorileri/sekmeleri aşağıdaki listeden tek tek silebilirsiniz.",
+    btnDeleteCategory: "Kategoriyi Sil",
+    confirmDeleteCategory: '"{cat}" kategorisini ve altındaki tüm payloadları silmek istediğinizden emin misiniz?',
+    confirmClearCustom: "Yüklediğiniz tüm özel payload kategorilerini temizlemek istediğinize emin misiniz?",
+    txtInspectTitle: "🔍 Yüklü Payloadları İncele",
+    searchBarPlaceholder: "Kategori veya payload içeriğinde ara...",
+    thSource: "Kaynak",
+    thCategory: "Kategori",
+    thTitle: "Başlık / Satır",
+    thValue: "Payload Değeri",
+    sourceOfficial: "Resmi (Official)",
+    sourceCustom: "Özel (Custom)",
+    txtNewVersionAlertTitle: "Yeni Kod Güncellemesi (HTML/JS) Mevcut!",
+    txtNewVersionAlertDesc: "Eklentinin HTML ve arayüz dosyalarında yapılan güncellemelerin etkinleşmesi için güncel kodları indirmeniz gerekir.",
+    btnDownloadUpdate: "Güncellemesini İndir (.ZIP)",
+    alertTxtEmpty: "Lütfen önce kategori / sekme adı girin ve bir .txt dosyası seçin.",
+    alertTxtNoLines: "Seçilen TXT dosyası boş veya geçersiz satırlara sahip.",
+    alertTxtSuccess: '"{cat}" kategorisine {count} adet payload başarıyla yüklendi!'
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const extVersionEl = document.getElementById("extVersion");
   const newVersionAlert = document.getElementById("newVersionAlert");
   const btnDownloadUpdate = document.getElementById("btnDownloadUpdate");
   const btnCheckUpdate = document.getElementById("btnCheckUpdate");
   const updateStatus = document.getElementById("updateStatus");
+  const appLanguageSelect = document.getElementById("appLanguage");
   
   const customCategoryInput = document.getElementById("customCategory");
   const txtFileInput = document.getElementById("txtFile");
@@ -20,41 +99,171 @@ document.addEventListener("DOMContentLoaded", () => {
   
   let officialPayloads = {};
   let customPayloads = {};
+  let currentLang = "en";
 
   // Set current version in UI
   const manifestData = chrome.runtime.getManifest();
   extVersionEl.textContent = `v${manifestData.version}`;
 
+  // Apply language strings dynamically
+  function translateUI(lang) {
+    currentLang = lang;
+    appLanguageSelect.value = lang;
+    const t = translations[lang] || translations["en"];
+
+    document.getElementById("subtitleHeader").textContent = t.subtitleHeader;
+    document.getElementById("txtLanguageTitle").textContent = t.txtLanguageTitle;
+    document.getElementById("lblAppLanguage").textContent = t.lblAppLanguage;
+    document.getElementById("txtUpdatesTitle").textContent = t.txtUpdatesTitle;
+    document.getElementById("txtUpdatesDesc").textContent = t.txtUpdatesDesc;
+    btnCheckUpdate.textContent = t.btnCheckUpdate;
+
+    document.getElementById("txtCustomTitle").textContent = t.txtCustomTitle;
+    document.getElementById("lblCustomCategory").textContent = t.lblCustomCategory;
+    customCategoryInput.placeholder = t.customCategoryPlaceholder;
+    document.getElementById("lblTxtFile").textContent = t.lblTxtFile;
+    btnUploadTxt.textContent = t.btnUploadTxt;
+    btnClearCustom.textContent = t.btnClearCustom;
+
+    document.getElementById("txtCustomManageTitle").textContent = t.txtCustomManageTitle;
+    document.getElementById("txtCustomManageDesc").textContent = t.txtCustomManageDesc;
+    document.getElementById("txtInspectTitle").textContent = t.txtInspectTitle;
+    searchBar.placeholder = t.searchBarPlaceholder;
+
+    document.getElementById("thSource").textContent = t.thSource;
+    document.getElementById("thCategory").textContent = t.thCategory;
+    document.getElementById("thTitle").textContent = t.thTitle;
+    document.getElementById("thValue").textContent = t.thValue;
+
+    document.getElementById("txtNewVersionAlertTitle").textContent = t.txtNewVersionAlertTitle;
+    document.getElementById("txtNewVersionAlertDesc").textContent = t.txtNewVersionAlertDesc;
+    btnDownloadUpdate.textContent = t.btnDownloadUpdate;
+
+    // Render stats badge
+    chrome.storage.local.get(["lastUpdated"], (res) => {
+      if (res.lastUpdated) {
+        updateStatus.textContent = `${lang === "tr" ? "Son Güncelleme" : "Last Update"}: ${res.lastUpdated}`;
+        updateStatus.className = "status-badge status-success";
+      } else {
+        updateStatus.textContent = t.updateStatusActive;
+        updateStatus.className = "status-badge status-info";
+      }
+    });
+  }
+
   // Load configuration and payloads from storage
   function loadAndRender() {
-    chrome.storage.local.get(["payloads", "customPayloads", "lastUpdated", "newVersionAvailable", "githubRepoUrl"], (result) => {
+    chrome.storage.local.get(["payloads", "customPayloads", "lastUpdated", "newVersionAvailable", "appLanguage"], (result) => {
+      const lang = result.appLanguage || "en";
+      translateUI(lang);
+
       officialPayloads = result.payloads || {};
       customPayloads = result.customPayloads || {};
-      
-      // Update check indicator
-      if (result.lastUpdated) {
-        updateStatus.textContent = `Son Güncelleme: ${result.lastUpdated}`;
-        updateStatus.className = "status-badge status-success";
-      }
 
-      // New extension version alert
+      // New extension version alert banner
       if (result.newVersionAvailable) {
         newVersionAlert.style.display = "flex";
-        btnDownloadUpdate.href = "https://github.com/Quake-py/Payload-Injector/archive/refs/heads/master.zip";
-        btnDownloadUpdate.textContent = `v${result.newVersionAvailable} Güncellemesini İndir (.ZIP)`;
       } else {
         newVersionAlert.style.display = "none";
       }
 
-      // Render custom categories manager list
       renderCustomCategoriesManager();
-
       renderPayloadTable();
     });
   }
 
-  // Render uploaded categories and single deletion buttons
+  loadAndRender();
+
+  // Language selection change handler
+  appLanguageSelect.addEventListener("change", () => {
+    const selectedLang = appLanguageSelect.value;
+    chrome.storage.local.set({ appLanguage: selectedLang }, () => {
+      translateUI(selectedLang);
+      chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
+        loadAndRender();
+      });
+    });
+  });
+
+  // Manual update checker trigger
+  btnCheckUpdate.addEventListener("click", () => {
+    const t = translations[currentLang] || translations["en"];
+    showStatus(t.updateStatusChecking, "status-info");
+    
+    chrome.runtime.sendMessage({ action: "checkOfficialUpdate" }, (response) => {
+      if (response && response.success) {
+        showStatus(t.updateStatusSuccess, "status-success");
+        loadAndRender();
+      } else {
+        showStatus(t.updateStatusFailed, "status-error");
+      }
+    });
+  });
+
+  // Upload custom txt lists
+  btnUploadTxt.addEventListener("click", () => {
+    const t = translations[currentLang] || translations["en"];
+    const categoryName = customCategoryInput.value.trim();
+    const file = txtFileInput.files[0];
+
+    if (!categoryName || !file) {
+      alert(t.alertTxtEmpty);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/)
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+
+      if (lines.length === 0) {
+        alert(t.alertTxtNoLines);
+        return;
+      }
+
+      const categoryObject = {};
+      lines.forEach((line, index) => {
+        categoryObject[`Line ${index + 1}`] = line;
+      });
+
+      chrome.storage.local.get(["customPayloads"], (result) => {
+        const currentCustom = result.customPayloads || {};
+        currentCustom[categoryName] = categoryObject;
+
+        chrome.storage.local.set({ customPayloads: currentCustom }, () => {
+          customCategoryInput.value = "";
+          txtFileInput.value = "";
+          
+          const successMsg = t.alertTxtSuccess.replace("{count}", lines.length).replace("{cat}", categoryName);
+          alert(successMsg);
+          
+          chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
+            loadAndRender();
+          });
+        });
+      });
+    };
+
+    reader.readAsText(file);
+  });
+
+  // Clear all custom payloads
+  btnClearCustom.addEventListener("click", () => {
+    const t = translations[currentLang] || translations["en"];
+    if (confirm(t.confirmClearCustom)) {
+      chrome.storage.local.set({ customPayloads: {} }, () => {
+        chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
+          loadAndRender();
+        });
+      });
+    }
+  });
+
+  // Render categories and deletion list
   function renderCustomCategoriesManager() {
+    const t = translations[currentLang] || translations["en"];
     const keys = Object.keys(customPayloads);
     if (keys.length === 0) {
       customCategoriesCard.style.display = "none";
@@ -77,17 +286,18 @@ document.addEventListener("DOMContentLoaded", () => {
       row.style.borderRadius = "8px";
 
       const infoText = document.createElement("div");
-      infoText.innerHTML = `<strong>${categoryName}</strong> <span style="color: var(--text-muted); font-size: 12px; margin-left: 8px;">(${payloadCount} Payload)</span>`;
+      infoText.innerHTML = `<strong>${categoryName}</strong> <span style="color: var(--text-muted); font-size: 12px; margin-left: 8px;">(${payloadCount} Payloads)</span>`;
 
       const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Kategoriyi Sil";
+      deleteBtn.textContent = t.btnDeleteCategory;
       deleteBtn.className = "btn";
       deleteBtn.style.padding = "6px 12px";
       deleteBtn.style.fontSize = "12px";
       deleteBtn.style.backgroundColor = "var(--danger)";
 
       deleteBtn.addEventListener("click", () => {
-        if (confirm(`"${categoryName}" kategorisini ve altındaki tüm payloadları silmek istediğinizden emin misiniz?`)) {
+        const confirmMsg = t.confirmDeleteCategory.replace("{cat}", categoryName);
+        if (confirm(confirmMsg)) {
           delete customPayloads[categoryName];
           chrome.storage.local.set({ customPayloads: customPayloads }, () => {
             chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
@@ -103,101 +313,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  loadAndRender();
-
-  // Manual update denetimi
-  btnCheckUpdate.addEventListener("click", () => {
-    showStatus("Denetleniyor...", "status-info");
-    
-    chrome.runtime.sendMessage({ action: "checkOfficialUpdate" }, (response) => {
-      if (response && response.success) {
-        showStatus("Güncelleme başarılı!", "status-success");
-        loadAndRender();
-      } else {
-        showStatus("Denetleme başarısız oldu. Bağlantınızı kontrol edin.", "status-error");
-      }
-    });
-  });
-
-  // TXT Yükleme Mantığı
-  btnUploadTxt.addEventListener("click", () => {
-    const categoryName = customCategoryInput.value.trim();
-    const file = txtFileInput.files[0];
-
-    if (!categoryName) {
-      alert("Lütfen önce kategori / sekme adı girin.");
-      return;
-    }
-    if (!file) {
-      alert("Lütfen bir .txt dosyası seçin.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const text = e.target.result;
-      // Satırlara ayır ve temizle
-      const lines = text.split(/\r?\n/)
-                        .map(line => line.trim())
-                        .filter(line => line.length > 0);
-
-      if (lines.length === 0) {
-        alert("Seçilen TXT dosyası boş veya geçersiz satırlara sahip.");
-        return;
-      }
-
-      // Kategori nesnesini oluştur
-      const categoryObject = {};
-      lines.forEach((line, index) => {
-        categoryObject[`Line ${index + 1}`] = line;
-      });
-
-      // customPayloads'a ekle
-      chrome.storage.local.get(["customPayloads"], (result) => {
-        const currentCustom = result.customPayloads || {};
-        currentCustom[categoryName] = categoryObject;
-
-        chrome.storage.local.set({ customPayloads: currentCustom }, () => {
-          customCategoryInput.value = "";
-          txtFileInput.value = "";
-          alert(`"${categoryName}" kategorisine ${lines.length} adet payload başarıyla yüklendi!`);
-          
-          // Rebuild context menus
-          chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
-            loadAndRender();
-          });
-        });
-      });
-    };
-
-    reader.readAsText(file);
-  });
-
-  // Özel Payloadları Temizleme
-  btnClearCustom.addEventListener("click", () => {
-    if (confirm("Yüklediğiniz tüm özel payload kategorilerini temizlemek istediğinize emin misiniz?")) {
-      chrome.storage.local.set({ customPayloads: {} }, () => {
-        chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
-          loadAndRender();
-        });
-      });
-    }
-  });
-
-  // Arama/Filtreleme
+  // Live filter/search matching
   searchBar.addEventListener("input", () => {
     const query = searchBar.value.toLowerCase().trim();
     filterTable(query);
   });
 
-  // Tablo Çizimi (Hem Resmi hem Özel Payload'ları gösterir)
+  // Render Table values
   function renderPayloadTable() {
     payloadTableBody.innerHTML = "";
+    const t = translations[currentLang] || translations["en"];
     
-    // Resmi olanları ekle
-    traverseAndAdd(officialPayloads, "Resmi (Official)");
-    // Özel olanları ekle
-    traverseAndAdd(customPayloads, "Özel (Custom)");
+    // Sadece secili dildeki resmi payload'lari tabloya cizdir
+    const currentLangOfficial = officialPayloads[currentLang] || officialPayloads["en"] || {};
+    traverseAndAdd(currentLangOfficial, t.sourceOfficial);
+    
+    // Kendi yukledigi ozel payload'lari ekle
+    traverseAndAdd(customPayloads, t.sourceCustom);
   }
 
   function traverseAndAdd(node, sourceName) {
@@ -213,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
           cellSource.textContent = sourceName;
           
           const cellCategory = document.createElement("td");
-          cellCategory.textContent = path.join(" > ") || "Genel";
+          cellCategory.textContent = path.join(" > ") || "General";
           
           const cellName = document.createElement("td");
           cellName.textContent = key;

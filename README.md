@@ -1,48 +1,49 @@
-# Payload Injector - QA & Input Validation Test Eklentisi
+# Payload Injector - QA & Input Validation Test Extension
 
-Payload Injector, Software Quality Assurance (QA), girdi doğrulama (input validation) ve sınır testleri gerçekleştiren güvenlik ve test ekipleri için geliştirilmiş, yüksek ölçeklenebilirliğe sahip ve **tamamen yerel (local)** çalışan bir tarayıcı eklentisidir.
-
-Bu eklenti, test senaryolarını kod içinde barındırmak yerine dinamik olarak `vectors.json` dosyasından okur ve kullanıcılara kendi test setlerini (.txt formatında) yükleme imkanı sunar.
+[English](#english) | [Türkçe](#türkçe)
 
 ---
 
-## 🚀 Öne Çıkan Özellikler
+## English
 
-- **Dinamik Sağ Tık Bağlam Menüsü**: Kod dosyalarını değiştirmeden `vectors.json` dosyasından okunan kategoriler ve payload'lar sağ tık menüsünde otomatik olarak listelenir.
-- **Yerel Öncelikli Çalışma**: Eklenti tamamen yerel verilerle çalışır. İnternet bağlantınız olmasa bile tüm test senaryolarına erişebilirsiniz.
-- **Resmi GitHub Güncelleme Sunucusu**: Eklenti açıldığında veya manuel tetiklendiğinde resmi GitHub reposu üzerinden yeni sürüm denetimi yapar ve `vectors.json` veritabanını arka planda otomatik günceller.
-- **Özel TXT Dosyası Yükleme (Sekme Ekleme)**: Ayarlar sayfasından kendi hazırladığınız `.txt` listelerini (her satıra bir payload gelecek şekilde) istediğiniz kategori başlığıyla yükleyip anında sağ tık menünüze ekleyebilirsiniz.
-- **Framework Engelini Aşma (Gelişmiş Enjeksiyon Motoru)**: React, Vue, Angular gibi modern arayüz kütüphanelerinde değer atama engellerini aşmak için klavye olaylarını (KeyboardEvents) ve dahili setter kancalarını (value setter bypass) simüle ederek sorunsuz enjeksiyon sağlar.
-- **Gelişmiş Arama Arayüzü**: Ayarlar sayfasında yüklü tüm payload'ları filtreleyip inceleyebilirsiniz.
+Payload Injector is a high-scalability, offline-first browser extension built for Software Quality Assurance (QA), input validation, boundary checking, and fuzzing tests.
+
+It dynamically reads test cases from a local data file (`vectors.json`) and populates nested right-click context menus. It also supports manual configuration and TXT file uploads to build custom categories.
+
+### 🚀 Key Features
+- **Dynamic Right-Click Menus**: Automatically loads categories and test strings from `vectors.json`.
+- **Bilingual Interface**: Choose between English (default) and Turkish locales via the Settings page. Official payloads in the right-click menu instantly rebuild in the selected language.
+- **Offline First**: Runs completely locally. No internet connection required to execute test cases.
+- **Official GitHub Updates**: Checks raw files on the official repository for version and payload schema updates automatically.
+- **Custom TXT File Imports**: Upload custom payload lists (one per line) from the settings page, name your custom category, and populate it into the right-click menu.
+- **Bypass Validation Restrictions**: Simulates Clipboard events, programmatic state updates, and key-by-key keystroke actions to ensure React, Vue, and Angular validation states register the changes.
+- **Shadow DOM Support**: Recursively traverses deep active nodes to inject payloads inside shadow roots and editors.
+
+### 🛠️ Installation
+1. Download this repository as a ZIP archive and unpack it.
+2. Navigate to `chrome://extensions/` (or `about:debugging` for Firefox).
+3. Enable **Developer Mode** (top-right in Chrome).
+4. Click **Load unpacked** and select the extension directory.
 
 ---
 
-## 🛠️ Kurulum Yönergeleri
+## Türkçe
 
-Eklenti Manifest V3 tabanlı olup derleme gerektirmez. Doğrudan tarayıcınıza kurup kullanabilirsiniz.
+Payload Injector, Software Quality Assurance (QA), girdi doğrulama (input validation), sınır kontrolü ve fuzzing testleri gerçekleştiren ekipler için geliştirilmiş Manifest V3 tabanlı bir tarayıcı eklentisidir.
 
-### Google Chrome, Brave, Opera veya Edge:
+Test verilerini kod içinde sabit (hardcoded) tutmak yerine dinamik olarak `vectors.json` dosyasından okur ve sağ tık menüsünü otomatik oluşturur.
+
+### 🚀 Öne Çıkan Özellikler
+- **Dinamik Sağ Tık Bağlam Menüsü**: Kategorileri ve test dizilerini `vectors.json` üzerinden dinamik okuyup hiyerarşik menüler oluşturur.
+- **Çift Dil Desteği**: Ayarlar sayfasından Türkçe veya İngilizce dil seçimi yapabilirsiniz. Seçilen dile göre sağ tık menü başlıkları ve açıklamaları anında yeniden oluşturulur.
+- **Yerel Öncelikli (Offline)**: İnternet bağlantınız olmasa dahi tüm test listelerinize erişebilirsiniz.
+- **Resmi GitHub Güncellemesi**: Resmi depo üzerindeki `vectors.json` güncellemelerini arka planda otomatik denetler ve günceller.
+- **Özel TXT Dosyası Yükleme (Sekme Ekleme)**: Kendi hazırladığınız TXT listelerini (her satıra bir girdi gelecek şekilde) istediğiniz sekme adıyla yükleyebilirsiniz.
+- **Modern Arayüz Korumalarını Aşma**: React, Vue, Angular gibi kütüphanelerde girdi alanlarının güncellenmeme sorununu aşmak için pano yapıştırma (paste event) simülasyonu ve karakter karakter tuş vuruşu simülasyonu yapar.
+- **Shadow DOM Desteği**: Shadow Root arkasında kalan metin kutularını derinlemesine tarayarak yakalar ve enjeksiyonu gerçekleştirir.
+
+### 🛠️ Kurulum Yönergeleri
 1. Bu depoyu ZIP olarak indirin ve bir klasöre çıkartın.
 2. Tarayıcınızda `chrome://extensions/` adresine gidin.
-3. Sağ üst köşedeki **Geliştirici Modu** (Developer Mode) seçeneğini aktif hale getirin.
-4. Sol üst köşedeki **Paketlenmemiş öğe yükle** (Load unpacked) butonuna tıklayın.
-5. Depoyu çıkarttığınız ana klasörü seçerek kurulumu tamamlayın.
-
-### Mozilla Firefox:
-1. Firefox tarayıcısını açıp `about:debugging#/runtime/this-firefox` adresine gidin.
-2. **Geçici Eklenti Yükle** (Load Temporary Add-on) butonuna tıklayın.
-3. İndirdiğiniz klasörün içindeki `manifest.json` dosyasını seçerek yükleyin.
-
----
-
-## 📂 Dosya Yapısı
-
-- `manifest.json`: Eklenti izinleri ve tarayıcı entegrasyonu ayarları.
-- `vectors.json`: Varsayılan yerel payload listeleri ve kategorileri.
-- `background.js`: Sağ tık menülerini oluşturan ve güncelleme kontrolü yapan servis yöneticisi.
-- `content.js`: Girdi alanlarına enjeksiyon yapan ve korumaları aşan sayfa betiği.
-- `options.html` & `options.js`: Güncelleme yönetimi ve özel TXT yükleme arayüzü.
-
-## 🤝 Katkıda Bulunma
-
-Bu proje açık kaynaklıdır! Yeni payload kategorileri eklemek veya kod kalitesini artırmak için PR (Pull Request) gönderebilirsiniz. Katkılarınız `vectors.json` dosyasının otomatik güncellenen resmi listesinde yayınlanacaktır.
+3. **Geliştirici Modu**'nu aktif hale getirin.
+4. **Paketlenmemiş öğe yükle** butonuna tıklayın ve eklenti klasörünü seçin.

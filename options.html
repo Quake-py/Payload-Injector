@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Payload Injector - Ayarlar ve Yönetim</title>
+  <title>Payload Injector - Settings & Management</title>
   <style>
     :root {
       --bg-primary: #0f172a;
@@ -91,7 +91,7 @@
       color: var(--text-muted);
     }
 
-    input[type="text"], input[type="file"] {
+    input[type="text"], input[type="file"], select {
       width: 100%;
       padding: 12px;
       background-color: var(--bg-primary);
@@ -103,12 +103,16 @@
       transition: border-color 0.2s;
     }
 
+    select {
+      cursor: pointer;
+    }
+
     input[type="file"] {
       padding: 8px;
       cursor: pointer;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, select:focus {
       outline: none;
       border-color: var(--accent);
     }
@@ -235,81 +239,93 @@
   <div class="container">
     <header>
       <div>
-        <h1>Payload Injector</h1>
-        <div style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Açık Kaynak QA & Girdi Doğrulama Test Aracı</div>
+        <h1 id="titleHeader">Payload Injector</h1>
+        <div id="subtitleHeader" style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Open Source QA & Input Validation Testing Tool</div>
       </div>
-      <div class="version" id="extVersion">v1.0.1</div>
+      <div class="version" id="extVersion">v1.0.0</div>
     </header>
 
-    <!-- Yeni Sürüm Uyarısı -->
+    <!-- New Version Alert -->
     <div id="newVersionAlert" class="update-alert">
       <div>
-        <strong style="color: var(--warning);">Yeni Kod Güncellemesi (HTML/JS) Mevcut!</strong> 
-        Eklentinin HTML ve arayüz dosyalarında yapılan güncellemelerin etkinleşmesi için güncel kodları indirmeniz gerekir.
+        <strong style="color: var(--warning);" id="txtNewVersionAlertTitle">New Update (HTML/JS) Available!</strong> 
+        <span id="txtNewVersionAlertDesc">You need to pull and refresh the updated code package to apply static UI/script enhancements.</span>
       </div>
-      <a href="#" id="btnDownloadUpdate" target="_blank" class="btn" style="background-color: var(--warning); padding: 8px 16px; font-size: 13px; text-decoration: none;">Güncel Kodları İndir (GitHub)</a>
+      <a href="#" id="btnDownloadUpdate" target="_blank" class="btn" style="background-color: var(--warning); padding: 8px 16px; font-size: 13px; text-decoration: none;">Download Update (.ZIP)</a>
     </div>
 
-    <!-- Resmi GitHub Güncelleme Durumu -->
+    <!-- General Settings & Language Choice -->
     <div class="card">
-      <div class="card-title">🔄 Resmi Güncelleme Durumu</div>
-      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0;">
-        Eklenti resmi GitHub sunucumuz üzerinden manifest ve vectors.json dosyalarını otomatik olarak takip eder ve günceller.
+      <div class="card-title" id="txtLanguageTitle">🌐 Language Settings / Dil Seçimi</div>
+      <div class="form-group">
+        <label for="appLanguage" id="lblAppLanguage">Select Extension Language / Eklenti Dili Seçin</label>
+        <select id="appLanguage">
+          <option value="en">English (Official Payloads & Menus)</option>
+          <option value="tr">Türkçe (Resmi Payloadlar ve Menüler)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- GitHub Updates Status -->
+    <div class="card">
+      <div class="card-title" id="txtUpdatesTitle">🔄 Official Updates Status</div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0;" id="txtUpdatesDesc">
+        The extension automatically pulls latest payloads and release version details from the official GitHub master repository.
       </p>
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <button class="btn" id="btnCheckUpdate">Güncellemeleri Şimdi Denetle</button>
-        <div id="updateStatus" class="status-badge status-info">Resmi Sürüm Aktif</div>
+        <button class="btn" id="btnCheckUpdate">Check for Updates Now</button>
+        <div id="updateStatus" class="status-badge status-info">Local Version Active</div>
       </div>
     </div>
 
-    <!-- Özel TXT Dosyası Yükleme (Sekme Ekleme) -->
+    <!-- Import Custom Payloads (New Tab) -->
     <div class="card">
-      <div class="card-title">📂 Özel TXT Payload Ekle (Yeni Sekme)</div>
+      <div class="card-title" id="txtCustomTitle">📂 Import Custom Payloads (New Tab)</div>
       <div class="custom-section">
         <div class="form-group">
-          <label for="customCategory">Kategori / Sekme Adı</label>
-          <input type="text" id="customCategory" placeholder="Örn: Benim SQLi Payloadlarım">
+          <label for="customCategory" id="lblCustomCategory">Category / Tab Title</label>
+          <input type="text" id="customCategory" placeholder="e.g. My SQLi Vectors">
         </div>
         <div class="form-group">
-          <label for="txtFile">TXT Dosyası Seç (Her Satıra Bir Payload)</label>
+          <label for="txtFile" id="lblTxtFile">Select TXT File (One Payload Per Line)</label>
           <input type="file" id="txtFile" accept=".txt">
         </div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <button class="btn" id="btnUploadTxt">TXT Payloadları Yükle</button>
-        <button class="btn btn-secondary" id="btnClearCustom" style="border-color: var(--danger); color: var(--danger);">Tüm Özel Payloadları Temizle</button>
+        <button class="btn" id="btnUploadTxt">Upload TXT Payloads</button>
+        <button class="btn btn-secondary" id="btnClearCustom" style="border-color: var(--danger); color: var(--danger);">Clear All Custom Payloads</button>
       </div>
     </div>
 
-    <!-- Özel Kategorileri Tek Tek Yönetme Paneli -->
+    <!-- Custom Category Manager List -->
     <div class="card" id="customCategoriesCard" style="display: none;">
-      <div class="card-title">⚙️ Özel Payload Kategorilerini Yönet</div>
-      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0; margin-bottom: 16px;">
-        Yüklediğiniz kategorileri/sekmeleri aşağıdaki listeden tek tek silebilirsiniz.
+      <div class="card-title" id="txtCustomManageTitle">⚙️ Manage Custom Payload Categories</div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0; margin-bottom: 16px;" id="txtCustomManageDesc">
+        Review your uploaded payload tabs and delete them individually.
       </p>
       <div id="customCategoriesList" style="display: flex; flex-direction: column; gap: 8px;">
-        <!-- Kategori satırları JS tarafından doldurulacak -->
+        <!-- Filled dynamically -->
       </div>
     </div>
 
-    <!-- Payload Arama & Görüntüleme Listesi -->
+    <!-- Payloads List Inspection -->
     <div class="card">
-      <div class="card-title">🔍 Yüklü Payloadları İncele</div>
+      <div class="card-title" id="txtInspectTitle">🔍 Inspect Loaded Payloads</div>
       <div class="search-box">
-        <input type="text" id="searchBar" placeholder="Kategori veya payload içeriğinde ara...">
+        <input type="text" id="searchBar" placeholder="Search by category name, title or payload value...">
       </div>
       <div class="table-container">
         <table id="payloadTable">
           <thead>
             <tr>
-              <th style="width: 25%;">Kaynak</th>
-              <th style="width: 25%;">Kategori</th>
-              <th style="width: 20%;">Başlık / Satır</th>
-              <th style="width: 30%;">Payload Değeri</th>
+              <th style="width: 25%;" id="thSource">Source</th>
+              <th style="width: 25%;" id="thCategory">Category</th>
+              <th style="width: 20%;" id="thTitle">Title / Row</th>
+              <th style="width: 30%;" id="thValue">Payload Value</th>
             </tr>
           </thead>
           <tbody>
-            <!-- JavaScript tarafından doldurulacak -->
+            <!-- Filled dynamically -->
           </tbody>
         </table>
       </div>

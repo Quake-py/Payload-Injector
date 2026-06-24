@@ -33,11 +33,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
   if (!tab || !tab.id) return;
   
-  chrome.storage.local.get(["payloads", "customPayloads"], (result) => {
+  chrome.storage.local.get(["payloads", "customPayloads", "appLanguage"], (result) => {
     const payloads = result.payloads || {};
     const customPayloads = result.customPayloads || {};
+    const lang = result.appLanguage || "en";
     
-    let value = findPayloadValue(payloads, info.menuItemId, "parent_official");
+    // Hem secilen dil altindaki resmi payload'lar hem de özel payload'lar içinde ara
+    const officialSubtree = payloads[lang] || payloads["en"] || {};
+    let value = findPayloadValue(officialSubtree, info.menuItemId, "parent_official");
     if (value === null) {
       value = findPayloadValue(customPayloads, info.menuItemId, "parent_custom");
     }
@@ -67,9 +70,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Helper: Initialize payloads from vectors.json if not present
 async function initializePayloads() {
-  const result = await chrome.storage.local.get(["payloads", "customPayloads"]);
+  const result = await chrome.storage.local.get(["payloads", "customPayloads", "appLanguage"]);
   if (!result.customPayloads) {
     await chrome.storage.local.set({ customPayloads: {} });
+  }
+  if (!result.appLanguage) {
+    await chrome.storage.local.set({ appLanguage: "en" });
   }
   
   if (!result.payloads) {
@@ -129,23 +135,33 @@ async function checkForUpdates() {
 async function rebuildMenus() {
   await chrome.contextMenus.removeAll();
   
-  const result = await chrome.storage.local.get(["payloads", "customPayloads"]);
+  const result = await chrome.storage.local.get(["payloads", "customPayloads", "appLanguage"]);
   const payloads = result.payloads || {};
   const customPayloads = result.customPayloads || {};
+  const lang = result.appLanguage || "en";
   
+  // Set menu titles based on language
+  const officialTitle = lang === "tr" ? "Resmi Payloadlar" : "Official Payloads";
+  const customTitle = lang === "tr" ? "Özel Payloadlar (Yüklenenler)" : "Custom Payloads (Uploaded)";
+  const settingsTitle = lang === "tr" ? "⚙️ Ayarları Aç" : "⚙️ Open Settings";
+  const githubTitle = lang === "tr" ? "🐙 GitHub Deposuna Git" : "🐙 Go to GitHub Repository";
+
   // 1. Resmi Payload'lar Grubu
   chrome.contextMenus.create({
     id: "parent_official",
-    title: "Official Payloads",
+    title: officialTitle,
     contexts: ["editable"]
   });
-  buildSubMenus(payloads, "parent_official");
+  
+  // Sadece aktif dil altındaki payload ağacını oluştur
+  const activePayloadTree = payloads[lang] || payloads["en"] || {};
+  buildSubMenus(activePayloadTree, "parent_official");
   
   // 2. Özel (Custom) Payload'lar Grubu
   if (Object.keys(customPayloads).length > 0) {
     chrome.contextMenus.create({
       id: "parent_custom",
-      title: "Custom Payloads (Yüklenenler)",
+      title: customTitle,
       contexts: ["editable"]
     });
     buildSubMenus(customPayloads, "parent_custom");
@@ -160,13 +176,13 @@ async function rebuildMenus() {
 
   chrome.contextMenus.create({
     id: "action_open_settings",
-    title: "⚙️ Ayarları Aç",
+    title: settingsTitle,
     contexts: ["editable"]
   });
 
   chrome.contextMenus.create({
     id: "action_open_github",
-    title: "🐙 GitHub Deposuna Git",
+    title: githubTitle,
     contexts: ["editable"]
   });
 }

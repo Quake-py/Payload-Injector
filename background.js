@@ -1,10 +1,13 @@
 // QA & Input Validation Extension - background.js
 
-// Resmi GitHub Deposu Bilgileri
-const OFFICIAL_REPO = "Payload-Injector";
 const GITHUB_USERNAME = "Quake-py";
-const OFFICIAL_VECTORS_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/master/vectors.json`;
-const OFFICIAL_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/master/manifest.json`;
+const OFFICIAL_REPO = "Payload-Injector";
+const BRANCH = "master";
+
+const OFFICIAL_VECTORS_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/${BRANCH}/vectors.json`;
+const OFFICIAL_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/${BRANCH}/manifest.json`;
+const OFFICIAL_BACKGROUND_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/${BRANCH}/background.js`;
+const OFFICIAL_CONTENT_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/${BRANCH}/content.js`;
 
 chrome.runtime.onInstalled.addListener(async () => {
   await initializePayloads();
@@ -23,7 +26,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     return;
   }
   if (info.menuItemId === "action_open_github") {
-    chrome.tabs.create({ url: "https://github.com/Quake-py/Payload-Injector" });
+    chrome.tabs.create({ url: `https://github.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}` });
     return;
   }
 
@@ -33,7 +36,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     const payloads = result.payloads || {};
     const customPayloads = result.customPayloads || {};
     
-    // Hem resmi hem de özel payload'lar içinde ara
     let value = findPayloadValue(payloads, info.menuItemId, "parent_official");
     if (value === null) {
       value = findPayloadValue(customPayloads, info.menuItemId, "parent_custom");
@@ -81,14 +83,12 @@ async function initializePayloads() {
   await rebuildMenus();
 }
 
-// Auto update from Github
+// Auto update from Github - Hem vectors.json hem de eklenti scriptlerini günceller!
 async function checkForUpdates() {
   try {
     // 1. Manifest / Versiyon Kontrolü
     const manifestRes = await fetch(OFFICIAL_MANIFEST_URL);
-    if (!manifestRes.ok) {
-      throw new Error(`Manifest fetch failed with status: ${manifestRes.status}`);
-    }
+    if (!manifestRes.ok) throw new Error("Manifest fetch failed");
     const remoteManifest = await manifestRes.json();
     const currentVersion = chrome.runtime.getManifest().version;
     
@@ -101,23 +101,34 @@ async function checkForUpdates() {
       });
     }
 
-    // 2. Vectors Güncellemesi
+    // 2. Vectors/Payloads Güncellemesi
     const vectorsRes = await fetch(OFFICIAL_VECTORS_URL);
-    if (!vectorsRes.ok) {
-      throw new Error(`Vectors fetch failed with status: ${vectorsRes.status}`);
+    if (vectorsRes.ok) {
+      const remoteVectors = await vectorsRes.json();
+      if (remoteVectors && typeof remoteVectors === "object") {
+        await chrome.storage.local.set({ payloads: remoteVectors });
+      }
     }
-    const remoteVectors = await vectorsRes.json();
-    if (remoteVectors && typeof remoteVectors === "object") {
-      await chrome.storage.local.set({ 
-        payloads: remoteVectors,
-        lastUpdated: new Date().toLocaleString()
-      });
-      await rebuildMenus();
+
+    // 3. Kod/Script Güncellemelerini İndir ve Storage'a Yaz (Dinamik Enjeksiyon İçin)
+    const contentScriptRes = await fetch(OFFICIAL_CONTENT_URL);
+    if (contentScriptRes.ok) {
+      const latestContentCode = await contentScriptRes.text();
+      await chrome.storage.local.set({ contentScriptCode: latestContentCode });
     }
+
+    const backgroundScriptRes = await fetch(OFFICIAL_BACKGROUND_URL);
+    if (backgroundScriptRes.ok) {
+      const latestBgCode = await backgroundScriptRes.text();
+      await chrome.storage.local.set({ backgroundScriptCode: latestBgCode });
+    }
+
+    await chrome.storage.local.set({ lastUpdated: new Date().toLocaleString() });
+    await rebuildMenus();
     
     return { success: true, hasNewVersion: hasNewExtensionVersion, version: remoteManifest.version };
   } catch (e) {
-    console.warn("Otomatik güncelleme denetimi atlandı (GitHub deposu henüz oluşturulmamış veya erişilemiyor olabilir):", e.message);
+    console.warn("Otomatik güncelleme denetimi atlandı:", e.message);
     return { success: false, error: e.message };
   }
 }
@@ -138,7 +149,7 @@ async function rebuildMenus() {
   });
   buildSubMenus(payloads, "parent_official");
   
-  // 2. Özel (Custom) Payload'lar Grubu (TXT ile eklenenler)
+  // 2. Özel (Custom) Payload'lar Grubu
   if (Object.keys(customPayloads).length > 0) {
     chrome.contextMenus.create({
       id: "parent_custom",
@@ -148,7 +159,7 @@ async function rebuildMenus() {
     buildSubMenus(customPayloads, "parent_custom");
   }
 
-  // 3. Menü Ayırıcı Çizgi ve Kontrol Linkleri
+  // 3. Menü Ayırıcı Kısayollar
   chrome.contextMenus.create({
     id: "separator_line",
     type: "separator",
@@ -168,7 +179,6 @@ async function rebuildMenus() {
   });
 }
 
-// Helper: Recursively build nested submenus
 function buildSubMenus(node, parentId) {
   if (typeof node !== "object" || node === null) return;
   
@@ -195,7 +205,6 @@ function buildSubMenus(node, parentId) {
   });
 }
 
-// Helper: Recursively locate a payload string given its unique generated menu ID
 function findPayloadValue(node, targetMenuId, parentId) {
   if (typeof node !== "object" || node === null) return null;
   

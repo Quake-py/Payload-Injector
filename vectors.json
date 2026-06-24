@@ -59,6 +59,22 @@
       "MongoDB Exists Operator": "{\"$exists\": true}",
       "MongoDB JavaScript Injection": "{\"$where\": \"this.username == 'admin'\"}"
     },
+    "JWT Boundary Tests": {
+      "None Algorithm Header": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYWRtaW4ifQ.",
+      "Symmetric Key HMAC Forgery": "HS256 forged signature token",
+      "Empty Signature Validation": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4ifQ."
+    },
+    "GraphQL Boundary Checks": {
+      "GraphQL Introspection Query": "{__schema{types{name,fields{name}}}}",
+      "GraphQL Query Batching Attack": "[{\"query\":\"query { user { id } }\"},{\"query\":\"query { user { id } }\"}]",
+      "Field Limit Depth Stress": "{user{friends{friends{friends{name}}}}}"
+    },
+    "Host Header Fuzzing": {
+      "Localhost Port Override": "localhost:8080",
+      "Absolute External Host Link": "google.com",
+      "Duplicate Header Spoof": "X-Forwarded-Host: localhost",
+      "Header injection payload": "localhost\r\nConnection: keep-alive"
+    },
     "Directory Traversal & Paths": {
       "Unix Basic Traversal": "../",
       "Unix Deep Traversal": "../../../../../etc/passwd",
@@ -227,6 +243,22 @@
       "NoSQL Yetki Atlama": "{\"username\": {\"$ne\": null}, \"password\": {\"$ne\": null}}",
       "MongoDB Varlık Operatörü": "{\"$exists\": true}",
       "MongoDB JavaScript Enjeksiyonu": "{\"$where\": \"this.username == 'admin'\"}"
+    },
+    "JWT Doğrulama Sınırları": {
+      "Algoritmasız Token Başlığı": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYWRtaW4ifQ.",
+      "Simetrik HMAC İmzası Taklidi": "HS256 forged signature token",
+      "İmzasız JWT Doğrulama Testi": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4ifQ."
+    },
+    "GraphQL Sorgu Sınırları": {
+      "GraphQL Şema Sorgulama": "{__schema{types{name,fields{name}}}}",
+      "GraphQL Çoklu Toplu İstek": "[{\"query\":\"query { user { id } }\"},{\"query\":\"query { user { id } }\"}]",
+      "Sorgu Derinlik Limiti Testi": "{user{friends{friends{friends{name}}}}}"
+    },
+    "Host Başlığı Sınır Testleri": {
+      "Localhost Port Değişikliği": "localhost:8080",
+      "Harici Güvenli Alan Taklidi": "google.com",
+      "Çift Host Başlığı Gönderimi": "X-Forwarded-Host: localhost",
+      "Satır Kesme Karakteri Enjeksiyonu": "localhost\r\nConnection: keep-alive"
     },
     "Dizin Gezinti & Dosya Yolları": {
       "Unix Basit Dizin Gezinti": "../",

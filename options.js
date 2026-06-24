@@ -4,8 +4,9 @@
 const translations = {
   en: {
     subtitleHeader: "Open Source QA & Input Validation Testing Tool",
-    txtLanguageTitle: "🌐 Language Settings",
+    txtLanguageTitle: "🌐 General Settings",
     lblAppLanguage: "Select Extension Language",
+    lblEnablePreviewEdit: "Preview and edit payloads before injection",
     txtUpdatesTitle: "🔄 Official Updates Status",
     txtUpdatesDesc: "The extension automatically pulls latest payloads and release version details from the official GitHub master repository.",
     btnCheckUpdate: "Check for Updates Now",
@@ -41,8 +42,9 @@ const translations = {
   },
   tr: {
     subtitleHeader: "Açık Kaynak QA & Girdi Doğrulama Test Aracı",
-    txtLanguageTitle: "🌐 Dil Ayarları",
+    txtLanguageTitle: "🌐 Genel Ayarlar",
     lblAppLanguage: "Eklenti Dilini Seçin",
+    lblEnablePreviewEdit: "Enjekte etmeden önce payloadları incele ve düzenle",
     txtUpdatesTitle: "🔄 Resmi Güncelleme Durumu",
     txtUpdatesDesc: "Eklenti resmi GitHub sunucumuz üzerinden manifest ve vectors.json dosyalarını otomatik olarak takip eder ve günceller.",
     btnCheckUpdate: "Güncellemeleri Şimdi Denetle",
@@ -85,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCheckUpdate = document.getElementById("btnCheckUpdate");
   const updateStatus = document.getElementById("updateStatus");
   const appLanguageSelect = document.getElementById("appLanguage");
+  const enablePreviewEditCheckbox = document.getElementById("enablePreviewEdit");
   
   const customCategoryInput = document.getElementById("customCategory");
   const txtFileInput = document.getElementById("txtFile");
@@ -114,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("subtitleHeader").textContent = t.subtitleHeader;
     document.getElementById("txtLanguageTitle").textContent = t.txtLanguageTitle;
     document.getElementById("lblAppLanguage").textContent = t.lblAppLanguage;
+    document.getElementById("lblEnablePreviewEdit").textContent = t.lblEnablePreviewEdit;
     document.getElementById("txtUpdatesTitle").textContent = t.txtUpdatesTitle;
     document.getElementById("txtUpdatesDesc").textContent = t.txtUpdatesDesc;
     btnCheckUpdate.textContent = t.btnCheckUpdate;
@@ -153,9 +157,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load configuration and payloads from storage
   function loadAndRender() {
-    chrome.storage.local.get(["payloads", "customPayloads", "lastUpdated", "newVersionAvailable", "appLanguage"], (result) => {
+    chrome.storage.local.get(["payloads", "customPayloads", "lastUpdated", "newVersionAvailable", "appLanguage", "enablePreviewEdit"], (result) => {
       const lang = result.appLanguage || "en";
       translateUI(lang);
+
+      enablePreviewEditCheckbox.checked = result.enablePreviewEdit || false;
 
       officialPayloads = result.payloads || {};
       customPayloads = result.customPayloads || {};
@@ -183,6 +189,12 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAndRender();
       });
     });
+  });
+
+  // Enable/Disable Preview-before-inject change handler
+  enablePreviewEditCheckbox.addEventListener("change", () => {
+    const isEnabled = enablePreviewEditCheckbox.checked;
+    chrome.storage.local.set({ enablePreviewEdit: isEnabled });
   });
 
   // Manual update checker trigger

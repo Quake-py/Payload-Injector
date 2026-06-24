@@ -14,7 +14,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const target = activeElement || getDeepActiveElement(document.activeElement);
     
     if (target) {
-      injectValueEnhanced(target, valueToInject);
+      if (message.preview) {
+        showPreviewModal(target, valueToInject);
+      } else {
+        injectValueEnhanced(target, valueToInject);
+      }
     }
   }
 });
@@ -26,6 +30,146 @@ function getDeepActiveElement(element) {
     return getDeepActiveElement(element.shadowRoot.activeElement);
   }
   return element;
+}
+
+// Gelişmiş Enjeksiyon Ön İzleme & Düzenleme Modalı
+function showPreviewModal(targetElement, initialValue) {
+  // Eski modal varsa temizle
+  const oldModal = document.getElementById("payload-injector-modal-root");
+  if (oldModal) oldModal.remove();
+
+  chrome.storage.local.get(["appLanguage"], (result) => {
+    const lang = result.appLanguage || "en";
+    const textTitle = lang === "tr" ? "Payload'ı Enjekte Etmeden Önce Düzenle" : "Edit Payload Before Injection";
+    const textInject = lang === "tr" ? "Yapıştır / Enjekte Et" : "Paste / Inject";
+    const textCancel = lang === "tr" ? "İptal" : "Cancel";
+
+    const modalRoot = document.createElement("div");
+    modalRoot.id = "payload-injector-modal-root";
+    modalRoot.style.position = "fixed";
+    modalRoot.style.zIndex = "2147483647";
+    modalRoot.style.top = "0";
+    modalRoot.style.left = "0";
+
+    const shadow = modalRoot.attachShadow({ mode: "open" });
+
+    // CSS Reset & UI Styling
+    const style = document.createElement("style");
+    style.textContent = `
+      .overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(4px);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Inter', -apple-system, sans-serif;
+      }
+      .modal-box {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 20px;
+        width: 90%; max-width: 480px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        color: #f8fafc;
+        box-sizing: border-box;
+      }
+      .header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 14px;
+      }
+      .title { font-weight: 700; font-size: 15px; margin: 0; color: #3b82f6; }
+      .close-btn { cursor: pointer; font-size: 18px; color: #94a3b8; transition: color 0.2s; }
+      .close-btn:hover { color: #f8fafc; }
+      .textarea {
+        width: 100%; height: 120px;
+        background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+        color: #f8fafc; padding: 10px; font-family: monospace; font-size: 13px;
+        box-sizing: border-box; resize: vertical; margin-bottom: 16px;
+      }
+      .textarea:focus { outline: none; border-color: #3b82f6; }
+      .actions { display: flex; justify-content: flex-end; gap: 8px; }
+      .btn {
+        padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; border: none;
+        transition: background-color 0.2s;
+      }
+      .btn-inject { background: #3b82f6; color: white; }
+      .btn-inject:hover { background: #2563eb; }
+      .btn-cancel { background: transparent; border: 1px solid #334155; color: #f8fafc; }
+      .btn-cancel:hover { background: #334155; }
+    `;
+
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+
+    const modalBox = document.createElement("div");
+    modalBox.className = "modal-box";
+
+    const header = document.createElement("div");
+    header.className = "header";
+
+    const title = document.createElement("h3");
+    title.className = "title";
+    title.textContent = textTitle;
+
+    const closeBtn = document.createElement("span");
+    closeBtn.className = "close-btn";
+    closeBtn.innerHTML = "&times;";
+
+    const textarea = document.createElement("textarea");
+    textarea.className = "textarea";
+    textarea.value = initialValue;
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const btnCancel = document.createElement("button");
+    btnCancel.className = "btn btn-cancel";
+    btnCancel.textContent = textCancel;
+
+    const btnInject = document.createElement("button");
+    btnInject.className = "btn btn-inject";
+    btnInject.textContent = textInject;
+
+    // Build DOM
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    actions.appendChild(btnCancel);
+    actions.appendChild(btnInject);
+    modalBox.appendChild(header);
+    modalBox.appendChild(textarea);
+    modalBox.appendChild(actions);
+    overlay.appendChild(modalBox);
+    shadow.appendChild(style);
+    shadow.appendChild(overlay);
+
+    document.body.appendChild(modalRoot);
+
+    // Focus on Textarea automatically
+    setTimeout(() => textarea.focus(), 50);
+
+    // Close Actions
+    const closeModal = () => modalRoot.remove();
+
+    closeBtn.addEventListener("click", closeModal);
+    btnCancel.addEventListener("click", closeModal);
+    
+    // Inject Action
+    btnInject.addEventListener("click", () => {
+      injectValueEnhanced(targetElement, textarea.value);
+      closeModal();
+    });
+
+    // Shortcut: Ctrl+Enter or Cmd+Enter to inject, Escape to cancel
+    textarea.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        injectValueEnhanced(targetElement, textarea.value);
+        closeModal();
+      } else if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+  });
 }
 
 // Gelişmiş Enjeksiyon Motoru

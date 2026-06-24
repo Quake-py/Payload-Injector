@@ -256,13 +256,17 @@
 
     <!-- General Settings & Language Choice -->
     <div class="card">
-      <div class="card-title" id="txtLanguageTitle">🌐 Language Settings / Dil Seçimi</div>
+      <div class="card-title" id="txtLanguageTitle">🌐 General Settings / Genel Ayarlar</div>
       <div class="form-group">
         <label for="appLanguage" id="lblAppLanguage">Select Extension Language / Eklenti Dili Seçin</label>
-        <select id="appLanguage">
+        <select id="appLanguage" style="margin-bottom: 16px;">
           <option value="en">English (Official Payloads & Menus)</option>
           <option value="tr">Türkçe (Resmi Payloadlar ve Menüler)</option>
         </select>
+      </div>
+      <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+        <input type="checkbox" id="enablePreviewEdit" style="width: auto; cursor: pointer; transform: scale(1.2);">
+        <label for="enablePreviewEdit" id="lblEnablePreviewEdit" style="margin-bottom: 0; cursor: pointer; font-size: 14px;">Preview and edit payloads before injection / Enjekte etmeden önce payloadları incele ve düzenle</label>
       </div>
     </div>
 

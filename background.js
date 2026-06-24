@@ -33,10 +33,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
   if (!tab || !tab.id) return;
   
-  chrome.storage.local.get(["payloads", "customPayloads", "appLanguage"], (result) => {
+  chrome.storage.local.get(["payloads", "customPayloads", "appLanguage", "enablePreviewEdit"], (result) => {
     const payloads = result.payloads || {};
     const customPayloads = result.customPayloads || {};
     const lang = result.appLanguage || "en";
+    const enablePreviewEdit = result.enablePreviewEdit || false;
     
     const activePayloadTree = payloads[lang] || payloads["en"] || {};
     
@@ -75,7 +76,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
       chrome.tabs.sendMessage(tab.id, {
         action: "injectPayload",
-        value: value
+        value: value,
+        preview: enablePreviewEdit
       }).catch(err => console.log("Tab communication error:", err));
     }
   });

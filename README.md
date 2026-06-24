@@ -19,11 +19,22 @@ It dynamically reads test cases from a local data file (`vectors.json`) and popu
 - **Bypass Validation Restrictions**: Simulates Clipboard events, programmatic state updates, and key-by-key keystroke actions to ensure React, Vue, and Angular validation states register the changes.
 - **Shadow DOM Support**: Recursively traverses deep active nodes to inject payloads inside shadow roots and editors.
 
-### 🛠️ Installation
-1. Download this repository as a ZIP archive and unpack it.
-2. Navigate to `chrome://extensions/` (or `about:debugging` for Firefox).
-3. Enable **Developer Mode** (top-right in Chrome).
-4. Click **Load unpacked** and select the extension directory.
+### 🛠️ Detailed Installation Guides
+
+#### Google Chrome / Chromium-Based Browsers (Edge, Opera, Brave, etc.)
+1. Download this repository as a `.zip` archive and unpack it into a folder.
+2. Open Chrome and navigate to `chrome://extensions/`.
+3. Enable **Developer Mode** by toggling the switch in the top-right corner.
+4. Click the **Load unpacked** button in the top-left.
+5. Select the root directory of the unpacked extension folder (the directory containing `manifest.json`).
+
+#### Mozilla Firefox
+Due to Firefox's security policies, unsigned extensions cannot be permanently installed from local `.zip` files in the standard release. Use these developer loading steps:
+1. Open Firefox and type `about:debugging` in the address bar, then press Enter.
+2. Click on **This Firefox** in the left sidebar.
+3. Click the **Load Temporary Add-on...** button.
+4. Navigate to your unpacked extension folder and select the `manifest.json` file (or select the `payload-injector.zip` file directly).
+5. The extension will load immediately. *(Note: Temporary extensions are automatically removed when you restart Firefox. You can reload it in seconds using the same steps).*
 
 ---
 
@@ -42,8 +53,19 @@ Test verilerini kod içinde sabit (hardcoded) tutmak yerine dinamik olarak `vect
 - **Modern Arayüz Korumalarını Aşma**: React, Vue, Angular gibi kütüphanelerde girdi alanlarının güncellenmeme sorununu aşmak için pano yapıştırma (paste event) simülasyonu ve karakter karakter tuş vuruşu simülasyonu yapar.
 - **Shadow DOM Desteği**: Shadow Root arkasında kalan metin kutularını derinlemesine tarayarak yakalar ve enjeksiyonu gerçekleştirir.
 
-### 🛠️ Kurulum Yönergeleri
-1. Bu depoyu ZIP olarak indirin ve bir klasöre çıkartın.
-2. Tarayıcınızda `chrome://extensions/` adresine gidin.
-3. **Geliştirici Modu**'nu aktif hale getirin.
-4. **Paketlenmemiş öğe yükle** butonuna tıklayın ve eklenti klasörünü seçin.
+### 🛠️ Detaylı Kurulum Yönergeleri
+
+#### Google Chrome / Chromium Tabanlı Tarayıcılar (Edge, Opera, Brave, vb.)
+1. Bu depoyu `.zip` arşivi olarak indirin ve bilgisayarınızda bir klasöre çıkartın.
+2. Chrome tarayıcınızı açarak adres satırına `chrome://extensions/` yazın ve gidin.
+3. Sağ üst köşedeki **Geliştirici Modu** (*Developer Mode*) anahtarını açık konuma getirin.
+4. Sol üstte beliren **Paketlenmemiş öğe yükle** (*Load unpacked*) butonuna tıklayın.
+5. Bilgisayarınızda eklenti dosyalarının bulunduğu (içinde `manifest.json` olan) ana klasörü seçin.
+
+#### Mozilla Firefox
+Firefox'un güvenlik politikaları nedeniyle, imzalanmamış uzantıların standart Firefox sürümüne kalıcı olarak yüklenmesi engellenmiştir. Eklentiyi test etmek için şu geçici yükleme adımlarını uygulayın:
+1. Firefox tarayıcınızı açıp adres satırına `about:debugging` yazın ve Enter'a basın.
+2. Sol menüden **Bu Firefox** (*This Firefox*) seçeneğine tıklayın.
+3. Sağ taraftaki **Geçici Eklenti Yükle...** (*Load Temporary Add-on...*) butonuna tıklayın.
+4. Eklenti klasörünüzü açıp **`manifest.json`** dosyasını (veya doğrudan derlenmiş `payload-injector.zip` arşivini) seçip açın.
+5. Eklenti anında aktifleşecektir. *(Not: Geçici eklentiler Firefox kapatıldığında otomatik olarak silinir. Yeniden test etmek istediğinizde aynı adımlarla saniyeler içinde tekrar yükleyebilirsiniz).*

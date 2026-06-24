@@ -99,6 +99,8 @@ async function checkForUpdates() {
         newVersionAvailable: remoteManifest.version,
         githubRepoUrl: `https://github.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}`
       });
+    } else {
+      await chrome.storage.local.remove(["newVersionAvailable"]);
     }
 
     // 2. Vectors/Payloads Güncellemesi

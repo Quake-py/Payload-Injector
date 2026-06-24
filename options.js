@@ -237,7 +237,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const categoryObject = {};
       lines.forEach((line, index) => {
-        categoryObject[`Line ${index + 1}`] = line;
+        let key = line;
+        if (categoryObject[key] !== undefined) {
+          key = `${line} (${index + 1})`;
+        }
+        categoryObject[key] = line;
       });
 
       chrome.storage.local.get(["customPayloads"], (result) => {
@@ -344,6 +348,30 @@ document.addEventListener("DOMContentLoaded", () => {
     traverseAndAdd(customPayloads, t.sourceCustom);
   }
 
+  function updateCustomPayloadKey(path, oldKey, newKey) {
+    const categoryName = path[0];
+    if (!categoryName) return;
+    
+    chrome.storage.local.get(["customPayloads"], (result) => {
+      const currentCustom = result.customPayloads || {};
+      if (currentCustom[categoryName] && currentCustom[categoryName][oldKey] !== undefined) {
+        const payloadValue = currentCustom[categoryName][oldKey];
+        
+        // delete old key
+        delete currentCustom[categoryName][oldKey];
+        
+        // insert new key
+        currentCustom[categoryName][newKey] = payloadValue;
+        
+        chrome.storage.local.set({ customPayloads: currentCustom }, () => {
+          chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
+            loadAndRender();
+          });
+        });
+      }
+    });
+  }
+
   function traverseAndAdd(node, sourceName) {
     function traverse(currentNode, path = []) {
       if (typeof currentNode !== "object" || currentNode === null) return;
@@ -360,7 +388,40 @@ document.addEventListener("DOMContentLoaded", () => {
           cellCategory.textContent = path.join(" > ") || "General";
           
           const cellName = document.createElement("td");
-          cellName.textContent = key;
+          
+          const t = translations[currentLang] || translations["en"];
+          const isCustom = (sourceName === t.sourceCustom);
+          
+          if (isCustom) {
+            const inputEl = document.createElement("input");
+            inputEl.type = "text";
+            inputEl.value = key;
+            inputEl.style.width = "100%";
+            inputEl.style.padding = "4px 8px";
+            inputEl.style.border = "1px solid var(--border-color)";
+            inputEl.style.borderRadius = "4px";
+            inputEl.style.backgroundColor = "var(--bg-primary)";
+            inputEl.style.color = "var(--text-main)";
+            inputEl.style.outline = "none";
+            inputEl.style.boxSizing = "border-box";
+            
+            inputEl.addEventListener("change", () => {
+              const newKeyName = inputEl.value.trim();
+              if (newKeyName && newKeyName !== key) {
+                updateCustomPayloadKey(path, key, newKeyName);
+              } else {
+                inputEl.value = key;
+              }
+            });
+            inputEl.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                inputEl.blur();
+              }
+            });
+            cellName.appendChild(inputEl);
+          } else {
+            cellName.textContent = key;
+          }
           
           const cellValue = document.createElement("td");
           const codeEl = document.createElement("code");

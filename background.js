@@ -1,10 +1,10 @@
 // QA & Input Validation Extension - background.js
 
 // Resmi GitHub Deposu Bilgileri
-const OFFICIAL_REPO = "efe-payload-injector"; // Örnek repo ismi
-const GITHUB_USERNAME = "Efe"; // Örnek kullanıcı adı
-const OFFICIAL_VECTORS_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/main/vectors.json`;
-const OFFICIAL_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/main/manifest.json`;
+const OFFICIAL_REPO = "Payload-Injector";
+const GITHUB_USERNAME = "Quake-py";
+const OFFICIAL_VECTORS_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/master/vectors.json`;
+const OFFICIAL_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}/master/manifest.json`;
 
 chrome.runtime.onInstalled.addListener(async () => {
   await initializePayloads();

@@ -1,5 +1,12 @@
 {
   "en": {
+    "Random Data Generators": {
+      "Generate Random Email": "GEN_RANDOM_EMAIL",
+      "Generate Secure Password": "GEN_RANDOM_PASSWORD",
+      "Generate Random Username": "GEN_RANDOM_USERNAME",
+      "Generate Random UUID": "GEN_RANDOM_UUID",
+      "Generate Random 6-Digit PIN": "GEN_RANDOM_NUMBER"
+    },
     "SQL Escape & Query Boundaries": {
       "Standard Quote Escape": "' OR '1'='1",
       "Double Quote Escape": "\" OR \"1\"=\"1",
@@ -185,6 +192,13 @@
     }
   },
   "tr": {
+    "Rastgele Veri Üreticiler": {
+      "Rastgele E-Posta Üret": "GEN_RANDOM_EMAIL",
+      "Güvenli Şifre Üret": "GEN_RANDOM_PASSWORD",
+      "Rastgele Kullanıcı Adı Üret": "GEN_RANDOM_USERNAME",
+      "Rastgele UUID Üret": "GEN_RANDOM_UUID",
+      "Rastgele 6 Haneli PIN Üret": "GEN_RANDOM_NUMBER"
+    },
     "SQL Kaçış & Sorgu Sınırları": {
       "Standart Tırnak Kaçışı": "' OR '1'='1",
       "Çift Tırnak Kaçışı": "\" OR \"1\"=\"1",

@@ -46,6 +46,19 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
     
     if (value !== null) {
+      // Dynamic random data generation check
+      if (value === "GEN_RANDOM_EMAIL") {
+        value = `testuser_${Math.floor(Math.random() * 100000)}@example.com`;
+      } else if (value === "GEN_RANDOM_PASSWORD") {
+        value = generateRandomPassword();
+      } else if (value === "GEN_RANDOM_USERNAME") {
+        value = `user_${Math.floor(Math.random() * 100000)}`;
+      } else if (value === "GEN_RANDOM_UUID") {
+        value = self.crypto.randomUUID();
+      } else if (value === "GEN_RANDOM_NUMBER") {
+        value = Math.floor(100000 + Math.random() * 900000).toString();
+      }
+
       chrome.tabs.sendMessage(tab.id, {
         action: "injectPayload",
         value: value
@@ -53,6 +66,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
   });
 });
+
+// Helper for generating complex passwords
+function generateRandomPassword() {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+  let pass = "";
+  for (let i = 0; i < 16; i++) {
+    pass += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return pass;
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "rebuildMenus") {

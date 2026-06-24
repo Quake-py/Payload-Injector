@@ -18,6 +18,15 @@ chrome.runtime.onStartup.addListener(async () => {
 
 // Listener for context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "action_open_settings") {
+    chrome.runtime.openOptionsPage();
+    return;
+  }
+  if (info.menuItemId === "action_open_github") {
+    chrome.tabs.create({ url: "https://github.com/Quake-py/Payload-Injector" });
+    return;
+  }
+
   if (!tab || !tab.id) return;
   
   chrome.storage.local.get(["payloads", "customPayloads"], (result) => {
@@ -138,6 +147,25 @@ async function rebuildMenus() {
     });
     buildSubMenus(customPayloads, "parent_custom");
   }
+
+  // 3. Menü Ayırıcı Çizgi ve Kontrol Linkleri
+  chrome.contextMenus.create({
+    id: "separator_line",
+    type: "separator",
+    contexts: ["editable"]
+  });
+
+  chrome.contextMenus.create({
+    id: "action_open_settings",
+    title: "⚙️ Ayarları Aç",
+    contexts: ["editable"]
+  });
+
+  chrome.contextMenus.create({
+    id: "action_open_github",
+    title: "🐙 GitHub Deposuna Git",
+    contexts: ["editable"]
+  });
 }
 
 // Helper: Recursively build nested submenus

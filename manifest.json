@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "QA & Input Validation Payload Injector",
+  "version": "1.0.0",
+  "description": "Dinamik vectors.json dosyası ve GitHub entegrasyonu ile girdi doğrulama, QA ve sınır testleri için kapsamlı test verisi enjektörü.",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://raw.githubusercontent.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "payload-injector-qa@efe.desktop",
+      "strict_min_version": "109.0"
+    }
+  }
+}

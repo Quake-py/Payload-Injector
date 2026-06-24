@@ -86,8 +86,10 @@ async function initializePayloads() {
 // Auto update from Github - Hem vectors.json hem de eklenti scriptlerini günceller!
 async function checkForUpdates() {
   try {
+    const cacheBuster = `?t=${Date.now()}`;
+
     // 1. Manifest / Versiyon Kontrolü
-    const manifestRes = await fetch(OFFICIAL_MANIFEST_URL);
+    const manifestRes = await fetch(OFFICIAL_MANIFEST_URL + cacheBuster);
     if (!manifestRes.ok) throw new Error("Manifest fetch failed");
     const remoteManifest = await manifestRes.json();
     const currentVersion = chrome.runtime.getManifest().version;
@@ -104,7 +106,7 @@ async function checkForUpdates() {
     }
 
     // 2. Vectors/Payloads Güncellemesi
-    const vectorsRes = await fetch(OFFICIAL_VECTORS_URL);
+    const vectorsRes = await fetch(OFFICIAL_VECTORS_URL + cacheBuster);
     if (vectorsRes.ok) {
       const remoteVectors = await vectorsRes.json();
       if (remoteVectors && typeof remoteVectors === "object") {
@@ -113,13 +115,13 @@ async function checkForUpdates() {
     }
 
     // 3. Kod/Script Güncellemelerini İndir ve Storage'a Yaz (Dinamik Enjeksiyon İçin)
-    const contentScriptRes = await fetch(OFFICIAL_CONTENT_URL);
+    const contentScriptRes = await fetch(OFFICIAL_CONTENT_URL + cacheBuster);
     if (contentScriptRes.ok) {
       const latestContentCode = await contentScriptRes.text();
       await chrome.storage.local.set({ contentScriptCode: latestContentCode });
     }
 
-    const backgroundScriptRes = await fetch(OFFICIAL_BACKGROUND_URL);
+    const backgroundScriptRes = await fetch(OFFICIAL_BACKGROUND_URL + cacheBuster);
     if (backgroundScriptRes.ok) {
       const latestBgCode = await backgroundScriptRes.text();
       await chrome.storage.local.set({ backgroundScriptCode: latestBgCode });

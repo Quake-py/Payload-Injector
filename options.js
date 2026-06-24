@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnUploadTxt = document.getElementById("btnUploadTxt");
   const btnClearCustom = document.getElementById("btnClearCustom");
 
+  const customCategoriesCard = document.getElementById("customCategoriesCard");
+  const customCategoriesList = document.getElementById("customCategoriesList");
+
   const searchBar = document.getElementById("searchBar");
   const payloadTableBody = document.querySelector("#payloadTable tbody");
   
@@ -43,7 +46,60 @@ document.addEventListener("DOMContentLoaded", () => {
         newVersionAlert.style.display = "none";
       }
 
+      // Render custom categories manager list
+      renderCustomCategoriesManager();
+
       renderPayloadTable();
+    });
+  }
+
+  // Render uploaded categories and single deletion buttons
+  function renderCustomCategoriesManager() {
+    const keys = Object.keys(customPayloads);
+    if (keys.length === 0) {
+      customCategoriesCard.style.display = "none";
+      return;
+    }
+
+    customCategoriesCard.style.display = "block";
+    customCategoriesList.innerHTML = "";
+
+    keys.forEach((categoryName) => {
+      const payloadCount = Object.keys(customPayloads[categoryName]).length;
+
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.padding = "10px 14px";
+      row.style.backgroundColor = "var(--bg-primary)";
+      row.style.border = "1px solid var(--border-color)";
+      row.style.borderRadius = "8px";
+
+      const infoText = document.createElement("div");
+      infoText.innerHTML = `<strong>${categoryName}</strong> <span style="color: var(--text-muted); font-size: 12px; margin-left: 8px;">(${payloadCount} Payload)</span>`;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Kategoriyi Sil";
+      deleteBtn.className = "btn";
+      deleteBtn.style.padding = "6px 12px";
+      deleteBtn.style.fontSize = "12px";
+      deleteBtn.style.backgroundColor = "var(--danger)";
+
+      deleteBtn.addEventListener("click", () => {
+        if (confirm(`"${categoryName}" kategorisini ve altındaki tüm payloadları silmek istediğinizden emin misiniz?`)) {
+          delete customPayloads[categoryName];
+          chrome.storage.local.set({ customPayloads: customPayloads }, () => {
+            chrome.runtime.sendMessage({ action: "rebuildMenus" }, () => {
+              loadAndRender();
+            });
+          });
+        }
+      });
+
+      row.appendChild(infoText);
+      row.appendChild(deleteBtn);
+      customCategoriesList.appendChild(row);
     });
   }
 

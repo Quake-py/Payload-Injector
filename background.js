@@ -38,9 +38,23 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     const customPayloads = result.customPayloads || {};
     const lang = result.appLanguage || "en";
     
-    // Hem secilen dil altindaki resmi payload'lar hem de özel payload'lar içinde ara
-    const officialSubtree = payloads[lang] || payloads["en"] || {};
-    let value = findPayloadValue(officialSubtree, info.menuItemId, "parent_official");
+    const activePayloadTree = payloads[lang] || payloads["en"] || {};
+    
+    // Separate generator subtree and official subtree
+    const generatorKey = lang === "tr" ? "Rastgele Veri Üreticiler" : "Random Data Generators";
+    const generatorsData = activePayloadTree[generatorKey] || {};
+    
+    // Search in separated generators tree first
+    let value = findPayloadValue(generatorsData, info.menuItemId, "parent_generators");
+    
+    // If not found in generators, search in official payloads (excluding the generator key)
+    if (value === null) {
+      const officialCleanTree = JSON.parse(JSON.stringify(activePayloadTree));
+      delete officialCleanTree[generatorKey];
+      value = findPayloadValue(officialCleanTree, info.menuItemId, "parent_official");
+    }
+    
+    // If still not found, search in custom user uploaded payloads
     if (value === null) {
       value = findPayloadValue(customPayloads, info.menuItemId, "parent_custom");
     }
@@ -164,23 +178,39 @@ async function rebuildMenus() {
   const lang = result.appLanguage || "en";
   
   // Set menu titles based on language
+  const generatorsTitle = lang === "tr" ? "Rastgele Veri Üreticiler" : "Random Data Generators";
   const officialTitle = lang === "tr" ? "Resmi Payloadlar" : "Official Payloads";
   const customTitle = lang === "tr" ? "Özel Payloadlar (Yüklenenler)" : "Custom Payloads (Uploaded)";
   const settingsTitle = lang === "tr" ? "⚙️ Ayarları Aç" : "⚙️ Open Settings";
   const githubTitle = lang === "tr" ? "🐙 GitHub Deposuna Git" : "🐙 Go to GitHub Repository";
 
-  // 1. Resmi Payload'lar Grubu
+  const activePayloadTree = payloads[lang] || payloads["en"] || {};
+  const generatorKey = lang === "tr" ? "Rastgele Veri Üreticiler" : "Random Data Generators";
+  
+  // 1. Rastgele Veri Üreticiler Grubu (Üst Düzey / Ayrı Sekme)
+  const generatorsData = activePayloadTree[generatorKey];
+  if (generatorsData) {
+    chrome.contextMenus.create({
+      id: "parent_generators",
+      title: generatorsTitle,
+      contexts: ["editable"]
+    });
+    buildSubMenus(generatorsData, "parent_generators");
+  }
+
+  // 2. Resmi Payload'lar Grubu
   chrome.contextMenus.create({
     id: "parent_official",
     title: officialTitle,
     contexts: ["editable"]
   });
   
-  // Sadece aktif dil altındaki payload ağacını oluştur
-  const activePayloadTree = payloads[lang] || payloads["en"] || {};
-  buildSubMenus(activePayloadTree, "parent_official");
+  // Resmi payload ağacından üreticileri çıkarıp geri kalanı ekle
+  const officialCleanTree = JSON.parse(JSON.stringify(activePayloadTree));
+  delete officialCleanTree[generatorKey];
+  buildSubMenus(officialCleanTree, "parent_official");
   
-  // 2. Özel (Custom) Payload'lar Grubu
+  // 3. Özel (Custom) Payload'lar Grubu
   if (Object.keys(customPayloads).length > 0) {
     chrome.contextMenus.create({
       id: "parent_custom",
@@ -190,7 +220,7 @@ async function rebuildMenus() {
     buildSubMenus(customPayloads, "parent_custom");
   }
 
-  // 3. Menü Ayırıcı Kısayollar
+  // 4. Menü Ayırıcı Kısayollar
   chrome.contextMenus.create({
     id: "separator_line",
     type: "separator",

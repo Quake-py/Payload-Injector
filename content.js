@@ -1,10 +1,29 @@
 // QA & Input Validation Extension - content.js
 
 let activeElement = null;
+let quickOverlayRoot = null;
 
 // En son sağ tıklanan elementi yakala (Shadow DOM ve iframe içlerini destekleyecek şekilde)
 document.addEventListener("contextmenu", (event) => {
   activeElement = getDeepActiveElement(event.target);
+  updateOverlayTargetIndicator(activeElement);
+}, true);
+
+// Odaklanan elementi takip et
+document.addEventListener("focus", (event) => {
+  const deepActive = getDeepActiveElement(event.target);
+  if (deepActive && (deepActive.tagName === "INPUT" || deepActive.tagName === "TEXTAREA" || deepActive.isContentEditable)) {
+    activeElement = deepActive;
+    updateOverlayTargetIndicator(deepActive);
+  }
+}, true);
+
+document.addEventListener("click", (event) => {
+  const deepActive = getDeepActiveElement(event.target);
+  if (deepActive && (deepActive.tagName === "INPUT" || deepActive.tagName === "TEXTAREA" || deepActive.isContentEditable)) {
+    activeElement = deepActive;
+    updateOverlayTargetIndicator(deepActive);
+  }
 }, true);
 
 // Arka plandan gelen enjeksiyon mesajlarını dinle
@@ -20,6 +39,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         injectValueEnhanced(target, valueToInject);
       }
     }
+  } else if (message.action === "openQuickOverlay") {
+    const target = activeElement || getDeepActiveElement(document.activeElement);
+    showQuickAccessOverlay(target);
   }
 });
 
@@ -277,3 +299,458 @@ function triggerBasicEvents(element) {
     element.dispatchEvent(event);
   });
 }
+
+function updateOverlayTargetIndicator(target) {
+  if (!quickOverlayRoot) return;
+  const shadow = quickOverlayRoot.shadowRoot;
+  if (!shadow) return;
+  const infoEl = shadow.getElementById("target-info");
+  if (!infoEl) return;
+  if (target) {
+    const name = target.id ? `#${target.id}` : (target.name ? `[name="${target.name}"]` : target.tagName.toLowerCase());
+    infoEl.textContent = `${name}`;
+    infoEl.style.color = "#3b82f6";
+  } else {
+    infoEl.textContent = "None selected. Click/focus input.";
+    infoEl.style.color = "#ef4444";
+  }
+}
+
+// 4. AŞAMA: Kolay Erişim Menüsü (Quick Access Menu Overlay)
+function showQuickAccessOverlay(initialTarget) {
+  if (quickOverlayRoot) {
+    quickOverlayRoot.remove();
+  }
+
+  chrome.storage.local.get(["payloads", "customPayloads", "appLanguage", "enablePreviewEdit"], (result) => {
+    const payloads = result.payloads || {};
+    const customPayloads = result.customPayloads || {};
+    const lang = result.appLanguage || "en";
+    const enablePreview = result.enablePreviewEdit || false;
+
+    // Translations
+    const textTitle = lang === "tr" ? "⚡ Kolay Erişim Menüsü" : "⚡ Quick Access Menu";
+    const searchPlaceholder = lang === "tr" ? "Payload ara..." : "Search payloads...";
+    const tabOfficial = lang === "tr" ? "Resmi" : "Official";
+    const tabCustom = lang === "tr" ? "Özel" : "Custom";
+    const tabGenerators = lang === "tr" ? "Üreticiler" : "Generators";
+    const targetText = lang === "tr" ? "Hedef:" : "Target:";
+    
+    const activePayloadTree = payloads[lang] || payloads["en"] || {};
+    const generatorKey = lang === "tr" ? "Rastgele Veri Üreticiler" : "Random Data Generators";
+    const generatorsData = activePayloadTree[generatorKey] || {};
+
+    const officialCleanTree = JSON.parse(JSON.stringify(activePayloadTree));
+    delete officialCleanTree[generatorKey];
+
+    // Create Root Container
+    quickOverlayRoot = document.createElement("div");
+    quickOverlayRoot.id = "payload-quick-overlay-root";
+    quickOverlayRoot.style.position = "fixed";
+    quickOverlayRoot.style.zIndex = "2147483647";
+    quickOverlayRoot.style.top = "20px";
+    quickOverlayRoot.style.right = "20px";
+    
+    const shadow = quickOverlayRoot.attachShadow({ mode: "open" });
+
+    // Overlay CSS Styling
+    const style = document.createElement("style");
+    style.textContent = `
+      .overlay-card {
+        width: 320px;
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        color: #f8fafc;
+        font-family: 'Inter', -apple-system, sans-serif;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .header {
+        background: #0f172a;
+        padding: 10px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #334155;
+        cursor: move;
+      }
+      .title {
+        font-size: 13px;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .close-btn {
+        cursor: pointer;
+        font-size: 18px;
+        color: #94a3b8;
+        line-height: 1;
+      }
+      .close-btn:hover {
+        color: #f8fafc;
+      }
+      .target-panel {
+        padding: 6px 12px;
+        background: #0f172a;
+        border-bottom: 1px solid #334155;
+        font-size: 11px;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .search-container {
+        padding: 10px;
+        background: #1e293b;
+        border-bottom: 1px solid #334155;
+      }
+      .search-input {
+        width: 100%;
+        padding: 8px 10px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        color: #f8fafc;
+        font-size: 12px;
+        box-sizing: border-box;
+        outline: none;
+      }
+      .search-input:focus {
+        border-color: #3b82f6;
+      }
+      .tabs {
+        display: flex;
+        background: #0f172a;
+        border-bottom: 1px solid #334155;
+      }
+      .tab-btn {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        padding: 8px 0;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        transition: color 0.2s, border-bottom 0.2s;
+        border-bottom: 2px solid transparent;
+      }
+      .tab-btn:hover {
+        color: #f8fafc;
+      }
+      .tab-btn.active {
+        color: #3b82f6;
+        border-bottom-color: #3b82f6;
+      }
+      .list-content {
+        height: 220px;
+        overflow-y: auto;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      .list-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .list-content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .list-content::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+      .category-header {
+        font-size: 10px;
+        font-weight: 700;
+        color: #3b82f6;
+        text-transform: uppercase;
+        margin: 8px 4px 4px 4px;
+        letter-spacing: 0.5px;
+      }
+      .payload-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .payload-item:hover {
+        background: #334155;
+        border-color: #3b82f6;
+      }
+      .payload-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #e2e8f0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 260px;
+      }
+    `;
+
+    // Elements Builder
+    const card = document.createElement("div");
+    card.className = "overlay-card";
+
+    const header = document.createElement("div");
+    header.className = "header";
+
+    const title = document.createElement("h4");
+    title.className = "title";
+    title.textContent = textTitle;
+
+    const closeBtn = document.createElement("span");
+    closeBtn.className = "close-btn";
+    closeBtn.innerHTML = "&times;";
+
+    const targetPanel = document.createElement("div");
+    targetPanel.className = "target-panel";
+    targetPanel.innerHTML = `<span>${targetText}</span><span id="target-info" style="font-weight:600;"></span>`;
+
+    const searchContainer = document.createElement("div");
+    searchContainer.className = "search-container";
+
+    const searchInput = document.createElement("input");
+    searchInput.type = "text";
+    searchInput.className = "search-input";
+    searchInput.placeholder = searchPlaceholder;
+
+    const tabsContainer = document.createElement("div");
+    tabsContainer.className = "tabs";
+
+    const tabBtnOfficial = document.createElement("button");
+    tabBtnOfficial.className = "tab-btn active";
+    tabBtnOfficial.textContent = tabOfficial;
+
+    const tabBtnCustom = document.createElement("button");
+    tabBtnCustom.className = "tab-btn";
+    tabBtnCustom.textContent = tabCustom;
+
+    const tabBtnGenerators = document.createElement("button");
+    tabBtnGenerators.className = "tab-btn";
+    tabBtnGenerators.textContent = tabGenerators;
+
+    const listContent = document.createElement("div");
+    listContent.className = "list-content";
+
+    // Append to Hierarchy
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    searchContainer.appendChild(searchInput);
+    tabsContainer.appendChild(tabBtnOfficial);
+    tabsContainer.appendChild(tabBtnCustom);
+    tabsContainer.appendChild(tabBtnGenerators);
+
+    card.appendChild(header);
+    card.appendChild(targetPanel);
+    card.appendChild(searchContainer);
+    card.appendChild(tabsContainer);
+    card.appendChild(listContent);
+    shadow.appendChild(style);
+    shadow.appendChild(card);
+
+    document.body.appendChild(quickOverlayRoot);
+
+    // Initial state target setup
+    updateOverlayTargetIndicator(activeElement || initialTarget);
+
+    let activeTabName = "official"; // official, custom, generators
+
+    // Load Tab Payloads List
+    function renderList(searchQuery = "") {
+      listContent.innerHTML = "";
+      const query = searchQuery.toLowerCase().trim();
+
+      if (activeTabName === "official") {
+        renderTree(officialCleanTree, query);
+      } else if (activeTabName === "custom") {
+        renderTree(customPayloads, query);
+      } else if (activeTabName === "generators") {
+        renderTree(generatorsData, query);
+      }
+    }
+
+    function renderTree(node, query) {
+      if (typeof node !== "object" || node === null) return;
+
+      Object.keys(node).forEach(key => {
+        const child = node[key];
+        if (typeof child === "string") {
+          // Leaf node / Payload Item
+          const matchesQuery = key.toLowerCase().includes(query) || child.toLowerCase().includes(query);
+          if (matchesQuery) {
+            const item = document.createElement("div");
+            item.className = "payload-item";
+            
+            const label = document.createElement("span");
+            label.className = "payload-label";
+            label.textContent = key;
+            label.title = `${key} : ${child}`;
+
+            item.appendChild(label);
+            
+            item.addEventListener("click", () => {
+              const currentTarget = activeElement || getDeepActiveElement(document.activeElement);
+              if (currentTarget) {
+                // Check generator keywords
+                let resolvedValue = child;
+                if (child === "GEN_RANDOM_EMAIL") {
+                  resolvedValue = `testuser_${Math.floor(Math.random() * 100000)}@example.com`;
+                } else if (child === "GEN_RANDOM_PASSWORD") {
+                  resolvedValue = generateRandomPassword();
+                } else if (child === "GEN_RANDOM_USERNAME") {
+                  resolvedValue = `user_${Math.floor(Math.random() * 100000)}`;
+                } else if (child === "GEN_RANDOM_UUID") {
+                  resolvedValue = self.crypto.randomUUID();
+                } else if (child === "GEN_RANDOM_NUMBER") {
+                  resolvedValue = Math.floor(100000 + Math.random() * 900000).toString();
+                }
+
+                if (enablePreview) {
+                  showPreviewModal(currentTarget, resolvedValue);
+                } else {
+                  injectValueEnhanced(currentTarget, resolvedValue);
+                }
+              }
+            });
+
+            listContent.appendChild(item);
+          }
+        } else if (typeof child === "object" && child !== null) {
+          // Categorized Subtree Node
+          const categoryName = key;
+          const container = document.createElement("div");
+          
+          const catHeader = document.createElement("div");
+          catHeader.className = "category-header";
+          catHeader.textContent = categoryName;
+
+          container.appendChild(catHeader);
+          
+          let hasMatchingChildren = false;
+
+          // Recursively check children
+          Object.keys(child).forEach(subKey => {
+            const subVal = child[subKey];
+            if (typeof subVal === "string") {
+              const matchesQuery = subKey.toLowerCase().includes(query) || subVal.toLowerCase().includes(query);
+              if (matchesQuery) {
+                hasMatchingChildren = true;
+                const item = document.createElement("div");
+                item.className = "payload-item";
+                
+                const label = document.createElement("span");
+                label.className = "payload-label";
+                label.textContent = subKey;
+                label.title = `${subKey} : ${subVal}`;
+
+                item.appendChild(label);
+
+                item.addEventListener("click", () => {
+                  const currentTarget = activeElement || getDeepActiveElement(document.activeElement);
+                  if (currentTarget) {
+                    if (enablePreview) {
+                      showPreviewModal(currentTarget, subVal);
+                    } else {
+                      injectValueEnhanced(currentTarget, subVal);
+                    }
+                  }
+                });
+
+                container.appendChild(item);
+              }
+            }
+          });
+
+          if (hasMatchingChildren) {
+            listContent.appendChild(container);
+          }
+        }
+      });
+    }
+
+    function generateRandomPassword() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+      let pass = "";
+      for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pass;
+    }
+
+    renderList();
+
+    // Search input listener
+    searchInput.addEventListener("input", () => {
+      renderList(searchInput.value);
+    });
+
+    // Tab button click events
+    tabBtnOfficial.addEventListener("click", () => {
+      tabBtnOfficial.className = "tab-btn active";
+      tabBtnCustom.className = "tab-btn";
+      tabBtnGenerators.className = "tab-btn";
+      activeTabName = "official";
+      renderList(searchInput.value);
+    });
+
+    tabBtnCustom.addEventListener("click", () => {
+      tabBtnOfficial.className = "tab-btn";
+      tabBtnCustom.className = "tab-btn active";
+      tabBtnGenerators.className = "tab-btn";
+      activeTabName = "custom";
+      renderList(searchInput.value);
+    });
+
+    tabBtnGenerators.addEventListener("click", () => {
+      tabBtnOfficial.className = "tab-btn";
+      tabBtnCustom.className = "tab-btn";
+      tabBtnGenerators.className = "tab-btn active";
+      activeTabName = "generators";
+      renderList(searchInput.value);
+    });
+
+    // Close listener
+    closeBtn.addEventListener("click", () => {
+      quickOverlayRoot.remove();
+      quickOverlayRoot = null;
+    });
+
+    // Drag and drop mechanics for the overlay
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    header.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      offsetX = e.clientX - quickOverlayRoot.offsetLeft;
+      offsetY = e.clientY - quickOverlayRoot.offsetTop;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      
+      const newX = e.clientX - offsetX;
+      const newY = e.clientY - offsetY;
+      
+      quickOverlayRoot.style.left = `${newX}px`;
+      quickOverlayRoot.style.top = `${newY}px`;
+      quickOverlayRoot.style.right = "auto";
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+  });
+}
+

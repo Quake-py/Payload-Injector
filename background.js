@@ -30,6 +30,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     chrome.tabs.create({ url: `https://github.com/${GITHUB_USERNAME}/${OFFICIAL_REPO}` });
     return;
   }
+  if (info.menuItemId === "action_open_overlay") {
+    if (tab && tab.id) {
+      chrome.tabs.sendMessage(tab.id, { action: "openQuickOverlay" })
+        .catch(err => console.log("Tab communication error:", err));
+    }
+    return;
+  }
 
   if (!tab || !tab.id) return;
   
@@ -226,6 +233,13 @@ async function rebuildMenus() {
   chrome.contextMenus.create({
     id: "separator_line",
     type: "separator",
+    contexts: ["editable"]
+  });
+
+  const overlayTitle = lang === "tr" ? "⚡ Kolay Erişim Menüsünü Aç" : "⚡ Open Quick Access Menu";
+  chrome.contextMenus.create({
+    id: "action_open_overlay",
+    title: overlayTitle,
     contexts: ["editable"]
   });
 

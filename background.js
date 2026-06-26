@@ -1,4 +1,3 @@
-// QA & Input Validation Extension - background.js
 
 const GITHUB_USERNAME = "Quake-py";
 const OFFICIAL_REPO = "Payload-Injector";
@@ -90,7 +89,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   });
 });
 
-// Helper for generating complex passwords
+
 function generateRandomPassword() {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
   let pass = "";

@@ -6,6 +6,8 @@
 
 ## English
 
+**This project is developed entirely for personal use; the user assumes all risks and responsibilities. The developer(s) accept no liability or responsibility whatsoever.**
+
 Payload Injector is a high-scalability, offline-first browser extension built for Software Quality Assurance (QA), input validation, boundary checking, and fuzzing tests.
 
 It dynamically reads test cases from a local data file (`vectors.json`) and populates nested right-click context menus. It also supports manual configuration and TXT file uploads to build custom categories.
@@ -39,6 +41,8 @@ Due to Firefox's security policies, unsigned extensions cannot be permanently in
 ---
 
 ## Türkçe
+
+**Bu proje tamamen kişisel kullanım için geliştirilmiştir; kullanıcı, projeyi tamamen kendi sorumluluğunda kullanır. Geliştirici veya geliştiriciler hiçbir şekilde sorumluluk kabul etmez.**
 
 Payload Injector, Software Quality Assurance (QA), girdi doğrulama (input validation), sınır kontrolü ve fuzzing testleri gerçekleştiren ekipler için geliştirilmiş Manifest V3 tabanlı bir tarayıcı eklentisidir.
 

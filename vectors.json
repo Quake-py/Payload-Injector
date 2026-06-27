@@ -1,6 +1,6 @@
 {
   "en": {
-    "SQL Escape & Query Boundaries": {
+    "SQL Escape & Query Boundariess": {
       "Standard Quote Escape": "' OR '1'='1",
       "Double Quote Escape": "\" OR \"1\"=\"1",
       "Parentheses Nesting Escape": "') OR ('1'='1",
